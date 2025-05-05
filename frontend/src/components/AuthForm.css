@@ -1,12 +1,3 @@
-:root {
-  --primary: #00f0ff;
-  --secondary: #ff1493;
-  --accent: #5cff3fe0;
-  --dark-bg: #0d0d2b;
-  --glass: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.2);
-}
-
 body {
   margin: 0;
   padding: 0;

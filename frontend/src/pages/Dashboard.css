@@ -1,8 +1,17 @@
 :root {
-  --dashboard-primary: #4a90e2;
-  --dashboard-secondary: #2d3436;
-  --dashboard-background: #f8f9fa;
-  --dashboard-border: #e9ecef;
+  --dashboard-primary: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  --dashboard-secondary: #ffffff;
+  --dashboard-accent: #ff4d6d;
+  --dark-bg: #0d0d2b;
+  --dashboard-background: linear-gradient(
+    135deg,
+    var(--dark-bg),
+    #1b1b3a,
+    #0d0d2b
+  );
+  --dashboard-border: rgba(57, 59, 63, 0.6);
+  --dashboard-text-primary: #111827;
+  --dashboard-text-secondary: #4b5563;
   --dashboard-sidebar-width: 280px;
   --dashboard-sidebar-collapsed-width: 80px;
 }
@@ -15,7 +24,8 @@
 
 .dashboard-sidebar {
   width: var(--dashboard-sidebar-width);
-  background: white;
+  background: black;
+  color: white !important;
   border-right: 1px solid var(--dashboard-border);
   padding: 1rem;
   position: fixed;
@@ -63,6 +73,7 @@
   color: var(--dashboard-secondary);
   gap: 1rem;
   white-space: nowrap;
+  border-radius: 10px;
 }
 
 .dashboard-nav-item .dashboard-nav-icon {
@@ -81,10 +92,11 @@
   cursor: pointer;
   color: var(--dashboard-secondary);
   gap: 1rem;
+  border-radius: 10px;
 }
 .dashboard-nav-item:hover,
 .dashboard-nav-header:hover {
-  background-color: rgba(0, 123, 255, 0.2);
+  background-color: rgb(65, 75, 85);
 }
 .dashboard-sidebar.dashboard-collapsed .dashboard-nav-header span,
 .dashboard-sidebar.dashboard-collapsed .dashboard-check-icon,
@@ -121,6 +133,7 @@
 
 .dashboard-bullet-items {
   padding-left: 1rem;
+  background: black !important;
   display: flex;
   flex-direction: column; /* Ensure the items are stacked vertically */
 }
@@ -129,14 +142,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  border-radius: 10px;
   padding: 0.5rem 1rem;
-  background-color: #ffffff; /* White background for the button */
   cursor: pointer; /* Makes it look clickable */
   transition: box-shadow 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
 }
 
 .dashboard-bullet-item:hover {
-  background-color: rgba(0, 123, 255, 0.1);
+  background-color: rgb(65, 75, 85);
   color: var(--dashboard-primary);
 }
 
@@ -168,9 +181,9 @@
   font-size: 1.5rem;
 }
 
-.dashboard-user-greeting small {
-  color: #6c757d;
-  font-size: 0.9rem;
+.dashboard-user-greeting span {
+  color: #ccc;
+  font-size: 1rem;
 }
 .dashboard-top-nav-right {
   display: flex;
@@ -185,19 +198,14 @@
   justify-content: center;
   color: var(--dashboard-secondary);
   cursor: pointer;
-  font-size: 1.5rem;
   background-color: rgba(0, 123, 255, 0.1); /* Light background color */
-  border-radius: 50%; /* Circular background */
-
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.dashboard-notification-icon {
-  margin: 0.75rem; /* Adds space inside the circle */
-}
+
 .dashboard-notification-icon:hover,
 .dashboard-settings-toggle:hover {
   background-color: rgba(0, 123, 255, 0.2); /* Slightly darker on hover */
-  color: var(--dashboard-primary);
+  color: white !important;
 }
 
 .dashboard-settings-toggle {
@@ -210,7 +218,13 @@
   border: 1px solid var(--dashboard-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
+.btn-check:checked + .btn,
+.btn.active,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check) + .btn:active {
+  color: cyan;
+}
 .dashboard-settings-item {
   display: flex;
   align-items: center;
@@ -219,8 +233,8 @@
 }
 
 .dashboard-settings-item:hover {
-  background: #f8f9fa;
-  color: var(--dashboard-primary) !important;
+  background: #a0a6add3;
+  color: #ffffffef !important;
 }
 
 .dashboard-content-area {
@@ -236,7 +250,7 @@
 }
 
 .divider {
-  margin: 2px 0px 10px;
+  margin: 10px 0px 10px;
   flex-shrink: 0;
   border-width: 0px 0px thin;
   border-style: solid;
@@ -430,7 +444,11 @@
 /* Dropdown Menu */
 .dropdown-menu {
   border-radius: 8px !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(14, 14, 14, 0.616);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  color: white;
   border: none !important;
 }
 
@@ -618,7 +636,6 @@
 }
 .notification-dropdown:hover {
   background-color: rgba(0, 123, 255, 0.2); /* Slightly darker on hover */
-  border-radius: 50%;
 }
 .notification-count {
   position: absolute;
@@ -721,7 +738,6 @@
 /* Add hover effect to the bell icon */
 .dashboard-notification-icon {
   transition: transform 0.3s ease;
-  padding: 8px;
   border-radius: 50%;
 }
 

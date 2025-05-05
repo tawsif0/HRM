@@ -86,7 +86,7 @@ const AuthForm = ({ isLogin }) => {
         toast.success("Login successful!");
         navigate("/dashboard");
       } else {
-        toast.success("Registration successful! Please login.");
+        toast.success("Registration successful!, Wait for role assignment.");
         navigate("/login");
       }
     } catch (err) {

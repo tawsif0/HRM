@@ -396,7 +396,11 @@ const Dashboard = () => {
 
     return (
       <div className="notification-dropdown">
-        <FiBell size={24} onClick={() => toggleMenu("notifications")} />
+        <FiBell
+          size={24}
+          onClick={() => toggleMenu("notifications")}
+          className="dashboard-notification-icon"
+        />
         {notifications > 0 ? (
           <span className="notification-count">{notifications}</span>
         ) : (
@@ -510,16 +514,9 @@ const Dashboard = () => {
                     onClick={() => setCurrentView("see")}
                   >
                     <span className="dashboard-bullet">•</span>
-                    <span className="dashboard-contents">See Role</span>
-                  </div>
-                )}
-                {user?.role?.name === "admin" && (
-                  <div
-                    className="dashboard-bullet-item"
-                    onClick={() => setCurrentView("users")}
-                  >
-                    <span className="dashboard-bullet">•</span>
-                    <span className="dashboard-contents">Users</span>
+                    <span className="dashboard-contents">
+                      User Role & Modify
+                    </span>
                   </div>
                 )}
               </div>
@@ -686,7 +683,7 @@ const Dashboard = () => {
 
           {currentView === "see" && user?.role?.name === "admin" && (
             <div className="form-container see-role-form">
-              <h3>View User Roles</h3>
+              <h3>View User Roles & Modifications</h3>
               <div className="user-list">
                 {users.map((user) => (
                   <div className="user-card" key={user._id}>
@@ -700,23 +697,6 @@ const Dashboard = () => {
                       <span className="assigned-role">
                         {user.role?.name || "No Role Assigned"}
                       </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {currentView === "users" && user?.role?.name === "admin" && (
-            <div className="form-container see-role-form">
-              <h3>User Modification</h3>
-              <div className="user-list">
-                {users.map((user) => (
-                  <div className="user-card" key={user._id}>
-                    <div className="user-info">
-                      <div className="user-avatar">
-                        {user.fullName.charAt(0)}
-                      </div>
-                      <span className="user-name">{user.fullName}</span>
                     </div>
                     <div className="role-assignment">
                       {user.role?.name !== "admin" && (
