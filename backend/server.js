@@ -37,9 +37,8 @@ async function initializeAdminRole() {
 const roleSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   isProtected: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
-
 const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -47,7 +46,9 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   isAdminPermanent: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
+  isRoleAssigned: { type: Boolean, default: false },
+  notifications: { type: Boolean, default: false }, // Track if there are notifications
+  createdAt: { type: Date, default: Date.now },
 });
 
 // Middleware
@@ -101,24 +102,33 @@ app.post("/api/auth/register", async (req, res) => {
   try {
     const { fullName, email, phone, password } = req.body;
 
-    // Check if user already exists
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    const user = new User({ fullName, email, phone, password });
+    const user = new User({
+      fullName,
+      email,
+      phone,
+      password,
+      notifications: true,
+    });
 
-    // Check if this is the first user to register
     const userCount = await User.countDocuments();
     if (userCount === 0) {
-      // Assign the first user the admin role
       const adminRole = await Role.findOne({ name: "admin" });
       user.role = adminRole._id;
-      user.isAdminPermanent = true; // Mark this user as a permanent admin
+      user.isAdminPermanent = true;
     }
 
     await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // Notify the admin about this new registration
+    // You can optionally store this notification in a separate collection if needed
+
+    res
+      .status(201)
+      .json({ message: "User registered successfully , wait for the role" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Registration failed" });
@@ -134,8 +144,13 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Check if user is not an admin and role is not assigned yet
+    if (!user.isAdminPermanent && !user.isRoleAssigned) {
+      return res.status(403).json({ message: "Wait for role assignment" });
+    }
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h"
+      expiresIn: "1h",
     });
 
     res.json({
@@ -145,13 +160,87 @@ app.post("/api/auth/login", async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
-        isAdminPermanent: user.isAdminPermanent
-      }
+        isAdminPermanent: user.isAdminPermanent,
+      },
     });
   } catch (err) {
     res.status(500).json({ message: "Login failed" });
   }
 });
+// Account Settings Route
+app.put("/api/user/profile", authMiddleware, async (req, res) => {
+  try {
+    const { fullName, email, phone, password } = req.body;
+    const user = req.user;
+
+    // Check if the user is an admin
+    if (user.role.name === "admin") {
+      // Admins can only update phone and password
+      if (password) {
+        // Hash the new password before saving it
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+      }
+
+      user.phone = phone || user.phone; // Admin can update the phone number
+    } else {
+      // Non-admins can update fullName (username), email, phone, and password
+      user.fullName = fullName || user.fullName; // Non-admin can update username
+      user.email = email || user.email; // Non-admin can update email
+      user.phone = phone || user.phone; // Non-admin can update phone
+      if (password) {
+        // Non-admins can update the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+      }
+    }
+
+    // Save the updated user details
+    await user.save();
+
+    res.status(200).json({ message: "Account updated successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating account settings" });
+  }
+});
+app.delete(
+  "/api/users/:userId",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      console.log("Deleting user with ID:", userId); // Log the user ID being deleted
+
+      // Find the user by ID and populate the role to access the role details
+      const userToDelete = await User.findById(userId).populate("role");
+
+      if (!userToDelete) {
+        console.error("User not found with ID:", userId);
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      if (userToDelete.role.name === "admin") {
+        console.error("Attempted to delete an admin user.");
+        return res
+          .status(400)
+          .json({ message: "Admin users cannot be deleted." });
+      }
+
+      // Delete the user using findByIdAndDelete instead of remove
+      await User.findByIdAndDelete(userId);
+
+      console.log("User deleted successfully with ID:", userId);
+
+      res.status(200).json({ message: "User deleted successfully!" });
+    } catch (err) {
+      console.error("Error deleting user:", err); // Log the full error here
+      res.status(500).json({ message: "Error deleting user" });
+    }
+  }
+);
 
 // User Routes
 app.get("/api/user/profile", authMiddleware, async (req, res) => {
@@ -265,38 +354,30 @@ app.post(
       const { userId } = req.params;
       const { roleId } = req.body;
 
-      // Validate inputs
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const role = await Role.findById(roleId);
       if (!role) return res.status(404).json({ message: "Role not found" });
 
-      // Prevent admin role assignment to non-admin users
+      // Prevent assigning admin role to non-admin users
       if (role.name === "admin" && user.isAdminPermanent) {
-        return res
-          .status(400)
-          .json({ message: "Admin role cannot be assigned to this user" });
+        return res.status(400).json({
+          message: "Admin role cannot be assigned to non-admin users",
+        });
       }
 
-      // Assign the role to the user
       user.role = role._id;
+      user.isRoleAssigned = true; // Update the user as having a role
       await user.save();
 
-      // Return the updated user
-      const updatedUser = await User.findById(userId)
-        .select("-password")
-        .populate("role");
-
-      res
-        .status(200)
-        .json({ message: "Role assigned successfully", user: updatedUser });
+      res.status(200).json({ message: "Role assigned successfully", user });
     } catch (err) {
-      console.error("Error assigning role:", err);
-      res.status(500).json({ message: "Role assignment failed" });
+      res.status(500).json({ message: "Error assigning role" });
     }
   }
 );
+
 // Update Role
 app.put(
   "/api/roles/:roleId",

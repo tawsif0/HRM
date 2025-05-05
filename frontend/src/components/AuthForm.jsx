@@ -9,7 +9,7 @@ import {
   FiEyeOff,
   FiUser,
   FiMail,
-  FiPhone
+  FiPhone,
 } from "react-icons/fi";
 
 import PhoneInput from "react-phone-number-input";
@@ -22,7 +22,10 @@ const passwordCriteria = [
   { label: "At least one uppercase letter", test: (p) => /[A-Z]/.test(p) },
   { label: "At least one lowercase letter", test: (p) => /[a-z]/.test(p) },
   { label: "At least one number", test: (p) => /\d/.test(p) },
-  { label: "At least one special character", test: (p) => /[!@#$%^&*]/.test(p) }
+  {
+    label: "At least one special character",
+    test: (p) => /[!@#$%^&*]/.test(p),
+  },
 ];
 
 const AuthForm = ({ isLogin }) => {
@@ -30,7 +33,7 @@ const AuthForm = ({ isLogin }) => {
     fullName: "",
     phone: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -46,7 +49,7 @@ const AuthForm = ({ isLogin }) => {
       fullName: "",
       phone: "",
       email: "",
-      password: ""
+      password: "",
     });
     setPasswordInput("");
     setFormErrors({});
@@ -72,6 +75,13 @@ const AuthForm = ({ isLogin }) => {
       const res = await axios.post(url, formData);
 
       if (isLogin) {
+        // Check if the user has a role assigned
+        if (!res.data.user.role) {
+          toast.error("Wait for role assignment from the admin.");
+          return;
+        }
+
+        // If role is assigned, allow login
         localStorage.setItem("token", res.data.token);
         toast.success("Login successful!");
         navigate("/dashboard");
@@ -81,7 +91,7 @@ const AuthForm = ({ isLogin }) => {
       }
     } catch (err) {
       const errors = err.response?.data?.errors || [
-        { msg: err.response?.data?.message || "Something went wrong" }
+        { msg: err.response?.data?.message || "Something went wrong" },
       ];
       errors.forEach((error) => toast.error(error.msg));
     }
@@ -189,7 +199,7 @@ const AuthForm = ({ isLogin }) => {
                   style={{
                     color: passed ? "#39ff14" : "red",
                     position: "relative",
-                    paddingLeft: "20px"
+                    paddingLeft: "20px",
                   }}
                 >
                   {crit.label}

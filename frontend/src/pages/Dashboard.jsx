@@ -17,10 +17,11 @@ import {
   FiPlus,
   FiUserPlus,
   FiEdit,
-  FiTrash2
+  FiTrash2,
 } from "react-icons/fi";
 import { Dropdown } from "react-bootstrap";
 import "./Dashboard.css";
+import AccountSettings from "./AccountSettings";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -35,8 +36,33 @@ const Dashboard = () => {
   const [editingUsers, setEditingUsers] = useState({});
   const [fixedRoles, setFixedRoles] = useState({});
   const [isEditingRole, setIsEditingRole] = useState(null);
+  const [notifications, setNotifications] = useState(0);
+  const [usersWithNotifications, setUsersWithNotifications] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch notifications for unassigned users
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get("http://localhost:5000/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        // Filter users with unassigned roles and exclude admins
+        const unassignedUsers = res.data.filter(
+          (user) => !user.isRoleAssigned && user.role?.name !== "admin"
+        );
+        setNotifications(unassignedUsers.length);
+        setUsersWithNotifications(unassignedUsers);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  // Fetch current user data
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -47,7 +73,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
       } catch (error) {
@@ -60,12 +86,13 @@ const Dashboard = () => {
     fetchUserData();
   }, [navigate]);
 
+  // Fetch roles
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:5000/api/roles", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setRoles(res.data);
       } catch (err) {
@@ -76,12 +103,13 @@ const Dashboard = () => {
     fetchRoles();
   }, []);
 
+  // Fetch users for role assignment
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:5000/api/users", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const usersData = res.data;
@@ -103,6 +131,7 @@ const Dashboard = () => {
     fetchUsers();
   }, []);
 
+  // Handle user logout
   const handleLogout = () => {
     toast.info("Logging out...", {
       autoClose: 1500,
@@ -110,14 +139,16 @@ const Dashboard = () => {
       onClose: () => {
         localStorage.removeItem("token");
         navigate("/login");
-      }
+      },
     });
   };
 
+  // Toggle sidebar menu
   const toggleMenu = (menu) => {
     setActiveMenu(activeMenu === menu ? "" : menu);
   };
 
+  // Create new role
   const handleCreateRole = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -134,7 +165,30 @@ const Dashboard = () => {
       toast.error("Error creating role");
     }
   };
+  const handleDeleteUser = async (userId) => {
+    try {
+      const token = localStorage.getItem("token"); // Ensure the token is valid and available
+      console.log("Deleting user with ID:", userId); // Log user ID
+      const res = await axios.delete(
+        `http://localhost:5000/api/users/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      if (res.status === 200) {
+        toast.success("User deleted successfully!");
+        setUsers(users.filter((user) => user._id !== userId));
+      }
+    } catch (err) {
+      console.error("Error deleting user:", err.response?.data || err.message);
+      toast.error("Error deleting user");
+    }
+  };
+
+  // Assign role to user
   const handleAssignRole = async (userId) => {
     try {
       const selectedRoleId = selectedRoles[userId];
@@ -166,11 +220,17 @@ const Dashboard = () => {
       );
 
       toast.success("Role assigned successfully!");
+      // Update the notification count
+      setNotifications((prevNotifications) => prevNotifications - 1);
+      setUsersWithNotifications((prevUsers) =>
+        prevUsers.filter((user) => user._id !== userId)
+      );
     } catch (err) {
       toast.error(err.response?.data?.message || "Error assigning role");
     }
   };
 
+  // Update role of user
   const handleUpdateRole = async (userId) => {
     try {
       const selectedRoleId = selectedRoles[userId];
@@ -202,6 +262,7 @@ const Dashboard = () => {
     }
   };
 
+  // Edit role name
   const handleEditRole = async (roleId, newRoleName) => {
     try {
       const token = localStorage.getItem("token");
@@ -225,6 +286,7 @@ const Dashboard = () => {
     }
   };
 
+  // Delete role
   const handleDeleteRole = async (roleId) => {
     const role = roles.find((r) => r._id === roleId);
 
@@ -237,7 +299,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:5000/api/roles/${roleId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       // Remove the deleted role from the roles state
@@ -248,7 +310,20 @@ const Dashboard = () => {
       toast.error(err.response?.data?.message || "Error deleting role");
     }
   };
-
+  const handleNotificationClick = (userId) => {
+    setCurrentView("assign");
+    // Highlight the specific user card in the role assignment view
+    setSelectedRoles({ ...selectedRoles, [userId]: null }); // Adjust this based on how you want to handle the active user.
+    // Once the user is assigned a role, clear the notification
+    setNotifications((prev) => prev - 1); // Decrease notification count
+    setUsersWithNotifications(
+      usersWithNotifications.filter((user) => user._id !== userId)
+    );
+  };
+  const handleAccountSettingsClick = () => {
+    setCurrentView("accountSettings");
+  };
+  // Render role assignment component
   const renderRoleAssignment = (user) => {
     const currentRole = user.role;
     const isEditing = editingUsers[user._id];
@@ -271,7 +346,7 @@ const Dashboard = () => {
                     onClick={() =>
                       setSelectedRoles((prev) => ({
                         ...prev,
-                        [user._id]: role._id
+                        [user._id]: role._id,
                       }))
                     }
                   >
@@ -303,13 +378,48 @@ const Dashboard = () => {
             onClick={() => {
               setSelectedRoles((prev) => ({
                 ...prev,
-                [user._id]: currentRole._id
+                [user._id]: currentRole._id,
               }));
               setEditingUsers((prev) => ({ ...prev, [user._id]: true }));
             }}
           >
             <FiEdit />
           </button>
+        )}
+      </div>
+    );
+  };
+
+  // Render notifications dropdown
+  const renderNotificationsDropdown = () => {
+    if (user?.role?.name !== "admin") return null; // Non-admins cannot see the notifications
+
+    return (
+      <div className="notification-dropdown">
+        <FiBell size={24} onClick={() => toggleMenu("notifications")} />
+        {notifications > 0 ? (
+          <span className="notification-count">{notifications}</span>
+        ) : (
+          <span className="notification-count">0</span>
+        )}
+        {activeMenu === "notifications" && (
+          <div className="notification-list">
+            {notifications > 0 ? (
+              usersWithNotifications.map((user) => (
+                <div
+                  key={user._id}
+                  className="notification-item"
+                  onClick={() => handleNotificationClick(user._id)}
+                >
+                  <span>{user.fullName} has registered. Assign a role.</span>
+                </div>
+              ))
+            ) : (
+              <div className="notification-item">
+                <span>No notifications</span>
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
@@ -403,6 +513,15 @@ const Dashboard = () => {
                     <span className="dashboard-contents">See Role</span>
                   </div>
                 )}
+                {user?.role?.name === "admin" && (
+                  <div
+                    className="dashboard-bullet-item"
+                    onClick={() => setCurrentView("users")}
+                  >
+                    <span className="dashboard-bullet">•</span>
+                    <span className="dashboard-contents">Users</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -415,7 +534,6 @@ const Dashboard = () => {
         <div className="dashboard-top-nav">
           <div className="dashboard-user-greeting">
             <h3>{user?.fullName || "User"}'s Dashboard</h3>
-            {/* Display the user role */}
             <div className="user-role-display">
               <span>
                 <strong>Role:</strong> {user?.role?.name || "No role assigned"}
@@ -424,7 +542,8 @@ const Dashboard = () => {
           </div>
 
           <div className="dashboard-top-nav-right">
-            <FiBell size={24} className="dashboard-notification-icon" />
+            {renderNotificationsDropdown()}
+
             <Dropdown show={showSettings} onToggle={setShowSettings}>
               <Dropdown.Toggle
                 variant="link"
@@ -434,10 +553,14 @@ const Dashboard = () => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu align="end" className="dashboard-settings-menu">
-                <Dropdown.Item className="dashboard-settings-item">
+                <Dropdown.Item
+                  className="dashboard-settings-item"
+                  onClick={handleAccountSettingsClick} // Navigate to AccountSettings
+                >
                   <FiUser className="me-2" />
                   Account Settings
                 </Dropdown.Item>
+
                 <Dropdown.Item
                   className="dashboard-settings-item"
                   onClick={handleLogout}
@@ -451,7 +574,6 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-content-area">
-          {/* Role Creation, Assigning, Modify, and View */}
           {currentView === "create" && (
             <div className="form-container create-role-form">
               <div className="form-header">
@@ -584,6 +706,35 @@ const Dashboard = () => {
               </div>
             </div>
           )}
+          {currentView === "users" && user?.role?.name === "admin" && (
+            <div className="form-container see-role-form">
+              <h3>User Modification</h3>
+              <div className="user-list">
+                {users.map((user) => (
+                  <div className="user-card" key={user._id}>
+                    <div className="user-info">
+                      <div className="user-avatar">
+                        {user.fullName.charAt(0)}
+                      </div>
+                      <span className="user-name">{user.fullName}</span>
+                    </div>
+                    <div className="role-assignment">
+                      {user.role?.name !== "admin" && (
+                        <button
+                          className="delete-button"
+                          onClick={() => handleDeleteUser(user._id)}
+                        >
+                          <FiTrash2 />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentView === "accountSettings" && <AccountSettings user={user} />}
         </div>
       </main>
     </div>

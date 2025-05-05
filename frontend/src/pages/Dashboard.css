@@ -612,3 +612,120 @@
 .cancel-button:active {
   background-color: #495057;
 }
+.notification-dropdown {
+  position: relative;
+  transition: all 0.3s ease;
+}
+.notification-dropdown:hover {
+  background-color: rgba(0, 123, 255, 0.2); /* Slightly darker on hover */
+  border-radius: 50%;
+}
+.notification-count {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: linear-gradient(135deg, #ff4757, #ff6b81);
+  color: white;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 3px 6px rgba(255, 71, 87, 0.2);
+  animation: pulse 2s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+}
+
+.notification-list {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 0;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 320px;
+  z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform-origin: top right;
+  animation: slideDown 0.3s ease-out;
+}
+
+.notification-item {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: rgba(241, 242, 246, 0.6);
+  color: #2d3436 !important;
+  transform: translateX(4px);
+}
+
+.notification-icon {
+  color: #4b7bec;
+  font-size: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  font-size: 14px;
+  color: #57606f;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #a4b0be;
+  margin-top: 4px;
+  display: block;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add hover effect to the bell icon */
+.dashboard-notification-icon {
+  transition: transform 0.3s ease;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.dashboard-notification-icon:hover {
+  transform: rotate(-15deg);
+  background: rgba(255, 71, 87, 0.1);
+}
