@@ -1,0 +1,113 @@
+/* SexyCalendar.css */
+.react-calendar {
+  background-color: #1a1b2f;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  padding: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  margin: 1.5rem 0px;
+}
+
+.react-calendar__tile {
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.react-calendar__tile:hover {
+  background: rgba(5, 238, 255, 0.15);
+  border: 1px solid #4de1f5;
+  color: #ffffff !important;
+  cursor: pointer;
+}
+
+.react-calendar__tile--now {
+  background: rgba(77, 171, 245, 0.15);
+  border: 1px solid #4d9ef5;
+  color: #ffffff;
+}
+
+.selected-holiday {
+  background: #ff4b5c !important;
+  color: white !important;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.react-calendar__tile--active,
+.react-calendar__tile--hasActive {
+  background: #3f51b5;
+  color: #fff;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d9534f;
+}
+
+.react-calendar__navigation button {
+  color: #f0f0f0;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.react-calendar__month-view__weekdays {
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+/* Calendar Navigation Styling - Elegant & Realistic Look */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.react-calendar__navigation button {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.react-calendar__navigation button:hover {
+  transform: scale(1.05);
+}
+
+.react-calendar__navigation__label {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 8px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.react-calendar__navigation__label:hover {
+  cursor: pointer;
+}
+.react-calendar__month-view__days__day--weekend {
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays {
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1rem !important;
+}

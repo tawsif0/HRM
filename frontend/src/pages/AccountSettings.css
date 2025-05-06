@@ -1,8 +1,9 @@
 .account-settings-container {
   max-width: 500px;
   margin: 40px auto;
-  background: linear-gradient(145deg, #f9f9f9, #ffffff);
-  border-radius: 20px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
   padding: 30px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
@@ -11,7 +12,7 @@
   text-align: center;
   font-size: 26px;
   font-weight: bold;
-  color: #333;
+  color: #fdfdfd;
   margin-bottom: 25px;
 }
 
@@ -29,14 +30,17 @@
 .account-settings-input-group label {
   font-weight: 500;
   margin-bottom: 8px;
-  color: #444;
+  color: #ffffff;
 }
 
 .account-settings-input-icon {
   display: flex;
   align-items: center;
-  background: #f1f1f1;
-  border: 1px solid #ccc;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-size: 1rem;
   border-radius: 10px;
   padding: 10px 12px;
   position: relative;
@@ -49,10 +53,11 @@
   background: transparent;
   width: 100%;
   font-size: 16px;
+  color: white;
 }
 
 .account-settings-input-icon svg {
-  color: #555;
+  color: cyan;
   font-size: 18px;
 }
 

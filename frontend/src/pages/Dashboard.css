@@ -130,12 +130,23 @@
   padding: 0.5rem 0;
   gap: 1rem;
 }
-
+.dashboard-sub-items {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  gap: 1rem;
+  cursor: pointer;
+}
+.dashboard-sub-items:hover {
+  background-color: rgb(65, 75, 85);
+  color: var(--dashboard-primary);
+}
 .dashboard-bullet-items {
   padding-left: 1rem;
   background: black !important;
   display: flex;
-  flex-direction: column; /* Ensure the items are stacked vertically */
+  flex-direction: column;
 }
 
 .dashboard-bullet-item {
@@ -238,7 +249,11 @@
 }
 
 .dashboard-content-area {
-  background: white;
+  background: rgba(14, 14, 14, 0.616);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none !important;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -278,16 +293,18 @@
 .modern-input {
   width: 100%;
   padding: 12px 20px;
-  border: 2px solid #e3e8ee;
-  border-radius: 8px;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 1px rgba(223, 219, 219, 0.219);
   font-size: 1rem;
   transition: all 0.3s ease;
   margin-bottom: 1.5rem;
 }
 
 .modern-input:focus {
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  box-shadow: 0 0 0 3px rgba(74, 145, 226, 0.212);
   outline: none;
 }
 
@@ -316,7 +333,8 @@
 }
 
 .user-card {
-  background: #fff;
+  background: var(--glass);
+  border-radius: 25px;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
@@ -325,7 +343,10 @@
   align-items: center;
   transition: transform 0.2s ease;
 }
-
+.user-card:hover {
+  background-color: rgba(65, 75, 85, 0.596);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
 .user-info {
   display: flex;
   align-items: center;
@@ -346,7 +367,7 @@
 
 .user-name {
   font-weight: 500;
-  color: #2d3748;
+  color: #ffffff;
 }
 
 /* Role Assignment Container */
@@ -359,19 +380,21 @@
 
 /* Dropdown Styling */
 .role-dropdown {
-  background: rgb(223, 217, 217) !important;
-  color: black !important;
-  border: none !important;
-  border-radius: 8px !important;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+  color: white !important;
+  border-radius: 12px !important;
+  font-size: 1rem;
+  padding: 6px 12px;
   padding: 8px 16px !important;
   font-weight: 500 !important;
   transition: all 0.3s ease !important;
 }
 
 .role-dropdown:hover {
-  background: rgb(255, 255, 255) !important;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25) !important;
-  color: black !important;
+  box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.25) !important;
+  color: rgb(255, 255, 255) !important;
 }
 
 .role-dropdown:focus {
@@ -432,11 +455,14 @@
 }
 
 .assigned-role {
-  background: #f0f4f8;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-size: 1rem;
   padding: 6px 12px;
   border-radius: 6px;
   font-weight: 500;
-  color: #2d3748;
   pointer-events: none;
   user-select: none;
 }
@@ -444,19 +470,26 @@
 /* Dropdown Menu */
 .dropdown-menu {
   border-radius: 8px !important;
-  background: rgba(14, 14, 14, 0.616);
+  background: rgba(14, 14, 14, 0.89);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   color: white;
   border: none !important;
+  font-size: 1rem;
 }
 
 .dropdown-item {
   padding: 8px 16px !important;
   transition: all 0.2s ease !important;
+  color: white;
+  cursor: pointer;
 }
-
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background-color: rgb(65, 75, 85);
+  color: #ffffffef !important;
+}
 /* Add subtle animation to buttons */
 @keyframes buttonShine {
   from {
@@ -490,15 +523,15 @@
   justify-content: space-between; /* Ensures items are spaced out */
   align-items: center;
   padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
   transition: background 0.3s ease, transform 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .role-item:hover {
-  background: #e1e8f0;
+  background-color: rgb(65, 75, 85);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -657,11 +690,14 @@
 }
 
 .notification-list {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  padding: 0;
+  border-radius: 8px !important;
+  background: rgba(14, 14, 14, 0.616);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none !important;
+  padding: 20px;
   position: absolute;
   top: 40px;
   right: 0;
@@ -687,8 +723,8 @@
 }
 
 .notification-item:hover {
-  background: rgba(241, 242, 246, 0.6);
-  color: #2d3436 !important;
+  background: #a0a6add3;
+  color: #ffffffef !important;
   transform: translateX(4px);
 }
 
@@ -745,3 +781,44 @@
   transform: rotate(-15deg);
   background: rgba(255, 71, 87, 0.1);
 }
+.react-calendar {
+  max-width: 100% !important;
+  background: white;
+  border: 1px solid #a0a096;
+  font-family: "Arial", "Helvetica", sans-serif;
+  line-height: 1.125em;
+}
+/* Sexy Dropdown Style */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.holiday-select {
+  margin: 1.5rem 0;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #11111a;
+  color: #fff;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 1px rgba(223, 219, 219, 0.219);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-size: 1rem;
+  font-family: inherit;
+  position: relative;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+}
+.holiday-select:hover,
+.holiday-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
+}
+/* Attendance */

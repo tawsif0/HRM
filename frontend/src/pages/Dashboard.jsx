@@ -18,10 +18,14 @@ import {
   FiUserPlus,
   FiEdit,
   FiTrash2,
+  FiCalendar,
+  FiUsers,
 } from "react-icons/fi";
 import { Dropdown } from "react-bootstrap";
 import "./Dashboard.css";
 import AccountSettings from "./AccountSettings";
+import Attendance from "./Attendance";
+import GiveAttendance from "./GiveAttendance";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -472,9 +476,18 @@ const Dashboard = () => {
                 </>
               )}
             </div>
-
+            <div className="divider"></div>
             {!isCollapsed && activeMenu === "pages" && (
               <div className="dashboard-sub-menu">
+                {user?.role?.name !== "admin" && (
+                  <div
+                    className="dashboard-sub-items"
+                    onClick={() => setCurrentView("gattendances")}
+                  >
+                    <FiCalendar className="dashboard-check-icon" />
+                    <span>Give Attendance</span>
+                  </div>
+                )}
                 {user?.role?.name === "admin" && (
                   <>
                     <div className="dashboard-sub-item">
@@ -510,13 +523,21 @@ const Dashboard = () => {
                 )}
                 {user?.role?.name === "admin" && (
                   <div
-                    className="dashboard-bullet-item"
+                    className="dashboard-sub-items"
                     onClick={() => setCurrentView("see")}
                   >
-                    <span className="dashboard-bullet">•</span>
-                    <span className="dashboard-contents">
-                      User Role & Modify
-                    </span>
+                    <FiUsers className="dashboard-check-icon" />
+                    <span>User Role & Modify</span>
+                  </div>
+                )}
+                <div className="divider"></div>
+                {user?.role?.name === "admin" && (
+                  <div
+                    className="dashboard-sub-items"
+                    onClick={() => setCurrentView("attendances")}
+                  >
+                    <FiCalendar className="dashboard-check-icon" />
+                    <span>Attendance</span>
                   </div>
                 )}
               </div>
@@ -618,7 +639,10 @@ const Dashboard = () => {
 
           {currentView === "modify" && (
             <div className="role-management-section">
-              <h3>Modify Roles</h3>
+              <div className="form-header">
+                <FiEdit className="form-icon" />
+                <h3>Modify Roles</h3>
+              </div>
               <div className="roles-list">
                 {roles
                   .filter((role) => role.name !== "admin") // Exclude admin role
@@ -683,7 +707,10 @@ const Dashboard = () => {
 
           {currentView === "see" && user?.role?.name === "admin" && (
             <div className="form-container see-role-form">
-              <h3>View User Roles & Modifications</h3>
+              <div className="form-header">
+                <FiUsers className="form-icon" />
+                <h3>View User Roles & Modifications</h3>
+              </div>
               <div className="user-list">
                 {users.map((user) => (
                   <div className="user-card" key={user._id}>
@@ -691,12 +718,10 @@ const Dashboard = () => {
                       <div className="user-avatar">
                         {user.fullName.charAt(0)}
                       </div>
-                      <span className="user-name">{user.fullName}</span>
-                    </div>
-                    <div className="role-assignment">
-                      <span className="assigned-role">
-                        {user.role?.name || "No Role Assigned"}
-                      </span>
+                      <div>
+                        <div className="user-name">{user.fullName}</div>
+                        <small>{user.role?.name}</small>
+                      </div>
                     </div>
                     <div className="role-assignment">
                       {user.role?.name !== "admin" && (
@@ -715,6 +740,8 @@ const Dashboard = () => {
           )}
 
           {currentView === "accountSettings" && <AccountSettings user={user} />}
+          {currentView === "attendances" && <Attendance user={user} />}
+          {currentView === "gattendances" && <GiveAttendance user={user} />}
         </div>
       </main>
     </div>

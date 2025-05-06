@@ -11,9 +11,8 @@ import {
   FiMail,
   FiPhone,
 } from "react-icons/fi";
-
 import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css"; // Required for flags & formatting
+import "react-phone-number-input/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AuthForm.css";
 
@@ -72,21 +71,26 @@ const AuthForm = ({ isLogin }) => {
     try {
       const endpoint = isLogin ? "login" : "register";
       const url = `http://localhost:5000/api/auth/${endpoint}`;
-      const res = await axios.post(url, formData);
+
+      // Convert email to lowercase before sending
+      const payload = {
+        ...formData,
+        email: formData.email.toLowerCase(),
+      };
+
+      const res = await axios.post(url, payload);
 
       if (isLogin) {
-        // Check if the user has a role assigned
         if (!res.data.user.role) {
           toast.error("Wait for role assignment from the admin.");
           return;
         }
 
-        // If role is assigned, allow login
         localStorage.setItem("token", res.data.token);
         toast.success("Login successful!");
         navigate("/dashboard");
       } else {
-        toast.success("Registration successful!, Wait for role assignment.");
+        toast.success("Registration successful! Wait for role assignment.");
         navigate("/login");
       }
     } catch (err) {
@@ -174,12 +178,12 @@ const AuthForm = ({ isLogin }) => {
             }}
           />
           {showPassword ? (
-            <FiEyeOff
+            <FiEye
               className="toggle-password"
               onClick={() => setShowPassword(false)}
             />
           ) : (
-            <FiEye
+            <FiEyeOff
               className="toggle-password"
               onClick={() => setShowPassword(true)}
             />

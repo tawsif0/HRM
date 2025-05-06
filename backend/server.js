@@ -7,6 +7,8 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const roleRoutes = require("./routes/roleRoutes");
 const Role = require("./models/Role");
+const holidayRoutes = require("./routes/holidayRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
 
 const app = express();
 app.use(express.json());
@@ -31,7 +33,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes); // profile, update
 app.use("/api/users", userRoutes); // list, delete, assign role
 app.use("/api/roles", roleRoutes);
-
+app.use("/api/holidays", holidayRoutes);
+app.use("/api/attendance", attendanceRoutes);
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 app.use((err, req, res, next) => {
   console.error(err);

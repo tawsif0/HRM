@@ -1,0 +1,79 @@
+.give-attendance-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: var(--glass, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+}
+
+.give-attendance-section h3 {
+  margin-bottom: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.attendance-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.attendance-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.attendance-btn.present {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+}
+
+.attendance-btn.present:hover {
+  background: linear-gradient(135deg, #43a047, #1b5e20);
+}
+
+.attendance-btn.absent {
+  background: linear-gradient(135deg, #f44336, #b71c1c);
+  color: white;
+}
+
+.attendance-btn.absent:hover {
+  background: linear-gradient(135deg, #e53935, #880e4f);
+}
+
+.absent-input-box {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.absent-input-box input {
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.absent-input-box button {
+  align-self: flex-start;
+  padding: 0.6rem 1.2rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.absent-input-box button:hover {
+  background-color: #1976d2;
+}
