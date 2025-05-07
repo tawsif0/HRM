@@ -279,9 +279,6 @@
 .form-header {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid #f0f2f5;
-  padding-bottom: 1rem;
 }
 
 .form-icon {
@@ -342,6 +339,7 @@
   justify-content: space-between;
   align-items: center;
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 .user-card:hover {
   background-color: rgba(65, 75, 85, 0.596);
@@ -821,4 +819,3 @@
   border-color: #4a90e2;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
 }
-/* Attendance */

@@ -16,7 +16,11 @@ const attendanceSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: Date.now, // server timestamp (UTC)
+  },
+  attendanceTime: {
+    type: String, // stores BD local time as string, e.g., "5/7/2025, 10:00:00 PM"
+    required: true,
   },
 });
 

@@ -26,6 +26,7 @@ import "./Dashboard.css";
 import AccountSettings from "./AccountSettings";
 import Attendance from "./Attendance";
 import GiveAttendance from "./GiveAttendance";
+import MyAttendance from "./MyAttendance";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -480,13 +481,23 @@ const Dashboard = () => {
             {!isCollapsed && activeMenu === "pages" && (
               <div className="dashboard-sub-menu">
                 {user?.role?.name !== "admin" && (
-                  <div
-                    className="dashboard-sub-items"
-                    onClick={() => setCurrentView("gattendances")}
-                  >
-                    <FiCalendar className="dashboard-check-icon" />
-                    <span>Give Attendance</span>
-                  </div>
+                  <>
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={() => setCurrentView("gattendances")}
+                    >
+                      <FiCalendar className="dashboard-check-icon" />
+                      <span>Give Attendance</span>
+                    </div>
+                    <div className="divider"></div>
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={() => setCurrentView("myattendances")}
+                    >
+                      <FiCalendar className="dashboard-check-icon" />
+                      <span>My Attendance</span>
+                    </div>
+                  </>
                 )}
                 {user?.role?.name === "admin" && (
                   <>
@@ -522,15 +533,18 @@ const Dashboard = () => {
                   </>
                 )}
                 {user?.role?.name === "admin" && (
-                  <div
-                    className="dashboard-sub-items"
-                    onClick={() => setCurrentView("see")}
-                  >
-                    <FiUsers className="dashboard-check-icon" />
-                    <span>User Role & Modify</span>
-                  </div>
+                  <>
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={() => setCurrentView("see")}
+                    >
+                      <FiUsers className="dashboard-check-icon" />
+                      <span>User Role & Modify</span>
+                    </div>
+                    <div className="divider"></div>
+                  </>
                 )}
-                <div className="divider"></div>
+
                 {user?.role?.name === "admin" && (
                   <div
                     className="dashboard-sub-items"
@@ -742,6 +756,7 @@ const Dashboard = () => {
           {currentView === "accountSettings" && <AccountSettings user={user} />}
           {currentView === "attendances" && <Attendance user={user} />}
           {currentView === "gattendances" && <GiveAttendance user={user} />}
+          {currentView === "myattendances" && <MyAttendance user={user} />}
         </div>
       </main>
     </div>

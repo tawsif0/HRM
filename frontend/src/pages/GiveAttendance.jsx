@@ -67,6 +67,9 @@ const GiveAttendance = ({ user }) => {
         {
           status,
           reason: status === "Absent" ? reason : undefined,
+          timestamp: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Dhaka",
+          }),
         },
         {
           headers: { Authorization: `Bearer ${token}` },
