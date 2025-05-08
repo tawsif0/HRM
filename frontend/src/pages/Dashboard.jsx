@@ -20,6 +20,8 @@ import {
   FiTrash2,
   FiCalendar,
   FiUsers,
+  FiFilePlus,
+  FiUserX,
 } from "react-icons/fi";
 import { Dropdown } from "react-bootstrap";
 import "./Dashboard.css";
@@ -27,6 +29,7 @@ import AccountSettings from "./AccountSettings";
 import Attendance from "./Attendance";
 import GiveAttendance from "./GiveAttendance";
 import MyAttendance from "./MyAttendance";
+import AssignTaskCreator from "./AssignTaskCreator";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -43,8 +46,12 @@ const Dashboard = () => {
   const [isEditingRole, setIsEditingRole] = useState(null);
   const [notifications, setNotifications] = useState(0);
   const [usersWithNotifications, setUsersWithNotifications] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   // Fetch notifications for unassigned users
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -501,35 +508,49 @@ const Dashboard = () => {
                 )}
                 {user?.role?.name === "admin" && (
                   <>
-                    <div className="dashboard-sub-item">
-                      <FiCheckSquare className="dashboard-check-icon" />
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={toggleDropdown}
+                    >
+                      <FiUserX className="dashboard-check-icon" />
                       <span>Roles</span>
+                      <FiChevronDown
+                        className={`dashboard-arrow ${
+                          isDropdownOpen ? "open" : ""
+                        }`}
+                      />
                     </div>
                     <div className="divider"></div>
-                    <div className="dashboard-bullet-items">
-                      <div
-                        className="dashboard-bullet-item"
-                        onClick={() => setCurrentView("create")}
-                      >
-                        <span className="dashboard-bullet">•</span>
-                        <span className="dashboard-contents">Create</span>
+                    {isDropdownOpen && (
+                      <div className="dashboard-dropdown-menu">
+                        <div className="dashboard-bullet-items">
+                          <div
+                            className="dashboard-bullet-item"
+                            onClick={() => setCurrentView("create")}
+                          >
+                            <FiPlus className="dashboard-check-icon" />
+                            <span className="dashboard-contents">Create</span>
+                          </div>
+                          <div className="divider"></div>
+                          <div
+                            className="dashboard-bullet-item"
+                            onClick={() => setCurrentView("assign")}
+                          >
+                            <FiUserPlus className="dashboard-check-icon" />
+                            <span className="dashboard-contents">Assign</span>
+                          </div>
+                          <div className="divider"></div>
+                          <div
+                            className="dashboard-bullet-item"
+                            onClick={() => setCurrentView("modify")}
+                          >
+                            <FiEdit className="dashboard-check-icon" />
+                            <span className="dashboard-contents">Modify</span>
+                          </div>
+                        </div>
+                        <div className="divider"></div>
                       </div>
-                      <div
-                        className="dashboard-bullet-item"
-                        onClick={() => setCurrentView("assign")}
-                      >
-                        <span className="dashboard-bullet">•</span>
-                        <span className="dashboard-contents">Assign</span>
-                      </div>
-                      <div
-                        className="dashboard-bullet-item"
-                        onClick={() => setCurrentView("modify")}
-                      >
-                        <span className="dashboard-bullet">•</span>
-                        <span className="dashboard-contents">Modify</span>
-                      </div>
-                    </div>
-                    <div className="divider"></div>
+                    )}
                   </>
                 )}
                 {user?.role?.name === "admin" && (
@@ -546,13 +567,28 @@ const Dashboard = () => {
                 )}
 
                 {user?.role?.name === "admin" && (
-                  <div
-                    className="dashboard-sub-items"
-                    onClick={() => setCurrentView("attendances")}
-                  >
-                    <FiCalendar className="dashboard-check-icon" />
-                    <span>Attendance</span>
-                  </div>
+                  <>
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={() => setCurrentView("attendances")}
+                    >
+                      <FiCalendar className="dashboard-check-icon" />
+                      <span>Attendance</span>
+                    </div>
+                    <div className="divider"></div>
+                  </>
+                )}
+                {user?.role?.name === "admin" && (
+                  <>
+                    <div
+                      className="dashboard-sub-items"
+                      onClick={() => setCurrentView("task-creator")}
+                    >
+                      <FiFilePlus className="dashboard-check-icon" />
+                      <span>task creator</span>
+                    </div>
+                    <div className="divider"></div>
+                  </>
                 )}
               </div>
             )}
@@ -757,6 +793,7 @@ const Dashboard = () => {
           {currentView === "attendances" && <Attendance user={user} />}
           {currentView === "gattendances" && <GiveAttendance user={user} />}
           {currentView === "myattendances" && <MyAttendance user={user} />}
+          {currentView === "task-creator" && <AssignTaskCreator user={user} />}
         </div>
       </main>
     </div>

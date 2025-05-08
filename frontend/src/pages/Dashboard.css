@@ -279,6 +279,9 @@
 .form-header {
   display: flex;
   align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ccc;
 }
 
 .form-icon {
