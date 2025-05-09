@@ -12,7 +12,6 @@ const authMiddleware = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Accept either 'id' or '_id' depending on how token was signed
     const userId = decoded.id || decoded._id;
 
     if (!userId) {
@@ -33,18 +32,22 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-// Middleware to allow only permanent or assigned admins
+// Middleware to allow only admins or task creators
 const adminMiddleware = (req, res, next) => {
+  // Check if the user is either an admin or a task creator
   if (
     !req.user?.isAdminPermanent &&
-    (!req.user.role || req.user.role.name !== "admin")
+    (!req.user.role || req.user.role.name !== "admin") &&
+    !req.user?.isTaskCreator
   ) {
-    return res.status(403).json({ message: "Admin privileges required" });
+    return res
+      .status(403)
+      .json({ message: "Admin or Task Creator privileges required" });
   }
   next();
 };
 
 module.exports = {
   authMiddleware,
-  adminMiddleware,
+  adminMiddleware
 };

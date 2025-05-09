@@ -34,10 +34,14 @@ router.put("/profile", authMiddleware, async (req, res) => {
 });
 
 router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
-  const users = await User.find().select("-password").populate("role");
-  res.json(users);
+  try {
+    const users = await User.find().select("-password").populate("role");
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ message: "Error fetching users" });
+  }
 });
-
 router.delete("/:userId", authMiddleware, adminMiddleware, async (req, res) => {
   const user = await User.findById(req.params.userId).populate("role");
   if (!user) return res.status(404).json({ message: "User not found." });
@@ -47,6 +51,56 @@ router.delete("/:userId", authMiddleware, adminMiddleware, async (req, res) => {
   await User.findByIdAndDelete(req.params.userId);
   res.json({ message: "User deleted successfully!" });
 });
+router.put(
+  "/:userId/assign-task-creator",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Assign Task Creator privilege
+      user.isTaskCreator = true;
+      await user.save();
+
+      res.json({
+        message: "Task creator privilege granted successfully",
+        user
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: "Error assigning task creator privilege" });
+    }
+  }
+);
+
+// Route to remove Task Creator privilege
+router.put(
+  "/:userId/remove-task-creator",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Remove Task Creator privilege
+      user.isTaskCreator = false;
+      await user.save();
+
+      res.json({
+        message: "Task creator privilege removed successfully",
+        user
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: "Error removing task creator privilege" });
+    }
+  }
+);
 
 router.put(
   "/:userId/role",

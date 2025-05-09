@@ -13,7 +13,7 @@ const AssignTaskCreator = () => {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/users", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
 
         // Filter out admin users
@@ -28,17 +28,18 @@ const AssignTaskCreator = () => {
     fetchUsers();
   }, []);
 
+  // Handle assigning Task Creator privilege
   const handleAssignRole = async (userId) => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/assign-task-creator/${userId}`,
-        {}, // Empty body since we're not sending data
+        `http://localhost:5000/api/users/${userId}/assign-task-creator`,
+        {}, // Empty body
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
+            "Content-Type": "application/json"
+          }
         }
       );
 
@@ -58,9 +59,40 @@ const AssignTaskCreator = () => {
     }
   };
 
+  // Handle removing Task Creator privilege
+  const handleRemoveRole = async (userId) => {
+    setLoading(true);
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${userId}/remove-task-creator`,
+        {}, // Empty body
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      // Update local state
+      setUsers(
+        users.map((user) => (user._id === userId ? response.data.user : user))
+      );
+
+      toast.success("Task creator removed successfully!");
+    } catch (err) {
+      console.error("Error:", err.response?.data);
+      toast.error(
+        err.response?.data?.message || "Failed to remove task creator"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="assign-task-creator-container">
-      <h2 className="assign-task-creator-title">Assign Task Creator Role</h2>
+      <h2 className="assign-task-creator-title">Assign the Task Creator</h2>
 
       <div className="assign-task-creator-users">
         {users.map((user) => (
@@ -72,13 +104,30 @@ const AssignTaskCreator = () => {
                 <small>{user.role?.name}</small>
               </div>
             </div>
-            <button
-              onClick={() => handleAssignRole(user._id)}
-              disabled={loading}
-              className="assign-button"
-            >
-              {loading ? "Assigning..." : "Make Task Creator"}
-            </button>
+
+            <div className="button-group">
+              {/* Make Task Creator Button */}
+              {!user.isTaskCreator && (
+                <button
+                  onClick={() => handleAssignRole(user._id)}
+                  disabled={loading}
+                  className="assign-button"
+                >
+                  {loading ? "Assigning..." : "Make Task Creator"}
+                </button>
+              )}
+
+              {/* Remove Task Creator Button */}
+              {user.isTaskCreator && (
+                <button
+                  onClick={() => handleRemoveRole(user._id)}
+                  disabled={loading}
+                  className="remove-button"
+                >
+                  {loading ? "Removing..." : "Remove Task Creator"}
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -249,7 +249,7 @@
 }
 
 .dashboard-content-area {
-  background: rgba(14, 14, 14, 0.616);
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
   backdrop-filter: blur(20px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   color: white;

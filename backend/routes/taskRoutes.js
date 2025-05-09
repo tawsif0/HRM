@@ -6,22 +6,28 @@ const router = express.Router();
 
 // Create Task (only task creators can create tasks)
 router.post("/", authMiddleware, async (req, res) => {
-  if (req.user.role.name === "admin") {
-    return res.status(400).json({ message: "Admins cannot create tasks." });
+  if (!req.user.isTaskCreator) {
+    return res
+      .status(403)
+      .json({ message: "Only task creators can create tasks." });
   }
 
   try {
     const { name, description, expireDate, assignedTo } = req.body;
+
+    // Create a new task with provided data
     const task = new Task({
       name,
       description,
       createdBy: req.user._id,
       assignedTo,
-      expireDate,
+      expireDate
     });
+
     await task.save();
-    res.status(201).json(task);
+    res.status(201).json(task); // Respond with the created task
   } catch (err) {
+    console.error("Error creating task:", err);
     res
       .status(500)
       .json({ message: "Error creating task", error: err.message });
@@ -76,6 +82,8 @@ router.put("/assign/:taskId", authMiddleware, async (req, res) => {
   }
 });
 
+// Get Tasks for Current User
+
 // Mark Task as Half-Complete
 router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;
@@ -97,7 +105,7 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error marking task as half-complete",
-      error: err.message,
+      error: err.message
     });
   }
 });

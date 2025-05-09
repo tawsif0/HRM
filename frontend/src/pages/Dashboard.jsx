@@ -21,7 +21,7 @@ import {
   FiCalendar,
   FiUsers,
   FiFilePlus,
-  FiUserX,
+  FiUserX
 } from "react-icons/fi";
 import { Dropdown } from "react-bootstrap";
 import "./Dashboard.css";
@@ -30,6 +30,7 @@ import Attendance from "./Attendance";
 import GiveAttendance from "./GiveAttendance";
 import MyAttendance from "./MyAttendance";
 import AssignTaskCreator from "./AssignTaskCreator";
+import TaskCreation from "./tasks/TaskCreation";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -58,7 +59,7 @@ const Dashboard = () => {
       const token = localStorage.getItem("token");
       try {
         const res = await axios.get("http://localhost:5000/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         // Filter users with unassigned roles and exclude admins
         const unassignedUsers = res.data.filter(
@@ -85,7 +86,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         setUser(res.data);
       } catch (error) {
@@ -104,7 +105,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:5000/api/roles", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         setRoles(res.data);
       } catch (err) {
@@ -121,7 +122,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:5000/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
 
         const usersData = res.data;
@@ -151,7 +152,7 @@ const Dashboard = () => {
       onClose: () => {
         localStorage.removeItem("token");
         navigate("/login");
-      },
+      }
     });
   };
 
@@ -185,8 +186,8 @@ const Dashboard = () => {
         `http://localhost:5000/api/users/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
@@ -311,7 +312,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:5000/api/roles/${roleId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       // Remove the deleted role from the roles state
@@ -358,7 +359,7 @@ const Dashboard = () => {
                     onClick={() =>
                       setSelectedRoles((prev) => ({
                         ...prev,
-                        [user._id]: role._id,
+                        [user._id]: role._id
                       }))
                     }
                   >
@@ -390,7 +391,7 @@ const Dashboard = () => {
             onClick={() => {
               setSelectedRoles((prev) => ({
                 ...prev,
-                [user._id]: currentRole._id,
+                [user._id]: currentRole._id
               }));
               setEditingUsers((prev) => ({ ...prev, [user._id]: true }));
             }}
@@ -427,7 +428,15 @@ const Dashboard = () => {
                   className="notification-item"
                   onClick={() => handleNotificationClick(user._id)}
                 >
-                  <span>{user.fullName} has registered. Assign a role.</span>
+                  <div className="user-info">
+                    <div className="user-avatar">{user.fullName.charAt(0)}</div>
+                    <div>
+                      <div className="user-name">
+                        {user.fullName}{" "}
+                        <span>has registered. Assign a role.</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
@@ -504,6 +513,16 @@ const Dashboard = () => {
                       <FiCalendar className="dashboard-check-icon" />
                       <span>My Attendance</span>
                     </div>
+                    <div className="divider"></div>
+                    {user.isTaskCreator && (
+                      <div
+                        className="dashboard-sub-items"
+                        onClick={() => setCurrentView("createTask")}
+                      >
+                        <FiCalendar className="dashboard-check-icon" />
+                        <span>Create Task</span>
+                      </div>
+                    )}
                   </>
                 )}
                 {user?.role?.name === "admin" && (
@@ -794,6 +813,7 @@ const Dashboard = () => {
           {currentView === "gattendances" && <GiveAttendance user={user} />}
           {currentView === "myattendances" && <MyAttendance user={user} />}
           {currentView === "task-creator" && <AssignTaskCreator user={user} />}
+          {currentView === "createTask" && <TaskCreation user={user} />}
         </div>
       </main>
     </div>

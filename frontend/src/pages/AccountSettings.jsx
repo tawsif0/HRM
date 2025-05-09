@@ -10,7 +10,7 @@ import {
   FiSave,
   FiUser,
   FiEye,
-  FiEyeOff,
+  FiEyeOff
 } from "react-icons/fi";
 import "./AccountSettings.css";
 
@@ -33,13 +33,13 @@ const AccountSettings = ({ user }) => {
       fullName: username,
       phone,
       email,
-      password,
+      password
     };
 
     try {
       const token = localStorage.getItem("token");
       await axios.put("http://localhost:5000/api/user/profile", updatedData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Account settings updated successfully!");
     } catch (err) {
@@ -107,7 +107,7 @@ const AccountSettings = ({ user }) => {
               className="account-settings-eye"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
+              {showPassword ? <FiEye /> : <FiEyeOff />}
             </span>
           </div>
         </div>

@@ -9,10 +9,12 @@ const userSchema = new mongoose.Schema({
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   isAdminPermanent: { type: Boolean, default: false },
   isRoleAssigned: { type: Boolean, default: false },
+  isTaskCreator: { type: Boolean, default: false }, // Flag for Task Creator privilege
   notifications: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 });
 
+// Password hashing before saving the user
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
