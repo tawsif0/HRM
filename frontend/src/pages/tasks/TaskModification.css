@@ -1,0 +1,89 @@
+/* Task Management Container */
+.task-management-container {
+  padding: 2rem;
+}
+
+.task-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.task-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 300px;
+  transition: all 0.3s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-10px);
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.task-card-edit-button {
+  background: #4ecca3;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.task-card-edit-button:hover {
+  background: #45b7af;
+}
+
+.task-edit-form {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px;
+}
+
+.task-edit-form input,
+.task-edit-form select,
+.task-edit-form textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.task-edit-form button {
+  background: #4ecca3;
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.task-edit-form button:disabled {
+  background: rgba(78, 204, 163, 0.5);
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  padding-left: 20px;
+  position: absolute;
+  left: 0;
+  display: block;
+}

@@ -5,6 +5,21 @@ const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 
 // Create Task (only task creators can create tasks)
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const tasks = await Task.find()
+      .populate("assignedTo")
+      .populate("createdBy");
+    console.log("Fetched tasks:", tasks); // Log fetched tasks
+    res.status(200).json(tasks);
+  } catch (err) {
+    console.error("Error fetching tasks:", err); // Log the error
+    res
+      .status(500)
+      .json({ message: "Error fetching tasks", error: err.message });
+  }
+});
+
 router.post("/", authMiddleware, async (req, res) => {
   if (!req.user.isTaskCreator) {
     return res
@@ -21,7 +36,7 @@ router.post("/", authMiddleware, async (req, res) => {
       description,
       createdBy: req.user._id,
       assignedTo,
-      expireDate
+      expireDate,
     });
 
     await task.save();
@@ -34,10 +49,12 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
+// Fetch all tasks (including the assignee and creator)
+
 // Modify Task (task creators can modify their tasks)
 router.put("/modify/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;
-  const { name, description, expireDate } = req.body;
+  const { name, description, expireDate, assignedTo } = req.body;
 
   try {
     const task = await Task.findById(taskId);
@@ -47,9 +64,12 @@ router.put("/modify/:taskId", authMiddleware, async (req, res) => {
         .json({ message: "Task not found or unauthorized" });
     }
 
+    // Update task properties if provided
     task.name = name || task.name;
     task.description = description || task.description;
     task.expireDate = expireDate || task.expireDate;
+    task.assignedTo = assignedTo || task.assignedTo; // Update assignedTo if provided
+
     await task.save();
     res.status(200).json(task);
   } catch (err) {
@@ -58,31 +78,6 @@ router.put("/modify/:taskId", authMiddleware, async (req, res) => {
       .json({ message: "Error modifying task", error: err.message });
   }
 });
-
-// Assign Task (task creators can assign tasks to other users)
-router.put("/assign/:taskId", authMiddleware, async (req, res) => {
-  const { taskId } = req.params;
-  const { assignedTo } = req.body;
-
-  try {
-    const task = await Task.findById(taskId);
-    if (!task || task.createdBy.toString() !== req.user._id.toString()) {
-      return res
-        .status(404)
-        .json({ message: "Task not found or unauthorized" });
-    }
-
-    task.assignedTo = assignedTo;
-    await task.save();
-    res.status(200).json(task);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error assigning task", error: err.message });
-  }
-});
-
-// Get Tasks for Current User
 
 // Mark Task as Half-Complete
 router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
@@ -105,7 +100,7 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error marking task as half-complete",
-      error: err.message
+      error: err.message,
     });
   }
 });

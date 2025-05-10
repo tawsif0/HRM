@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FiCalendar, FiUser, FiClipboard, FiChevronDown } from "react-icons/fi";
+import DatePicker from "react-datepicker"; // Import react-datepicker
+import "react-datepicker/dist/react-datepicker.css"; // Import the CSS for react-datepicker
+
 import "./TaskCreation.css"; // Make sure to link your CSS
 
 const TaskCreation = () => {
@@ -10,7 +13,7 @@ const TaskCreation = () => {
     name: "",
     description: "",
     expireDate: "",
-    assignedTo: ""
+    assignedTo: "",
   });
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,8 +21,9 @@ const TaskCreation = () => {
     name: "",
     description: "",
     expireDate: "",
-    assignedTo: ""
+    assignedTo: "",
   });
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown state
 
   // Fetch users who are neither admin nor task creator
   useEffect(() => {
@@ -28,8 +32,8 @@ const TaskCreation = () => {
         const response = await axios.get("http://localhost:5000/api/users", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         });
         const filteredUsers = response.data.filter(
           (user) => user.role.name !== "admin" && !user.isTaskCreator
@@ -48,6 +52,25 @@ const TaskCreation = () => {
 
     // Clear error when the user starts typing again
     setErrors({ ...errors, [name]: "" });
+  };
+
+  const handleDateChange = (date) => {
+    // Format the date as dd/mm/yyyy
+    const formattedDate = `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}`;
+    setTaskData({ ...taskData, expireDate: formattedDate });
+
+    // Clear the error when the date is changed
+    setErrors({ ...errors, expireDate: "" });
+  };
+
+  const handleSelectUser = (userId) => {
+    setTaskData({ ...taskData, assignedTo: userId });
+    setDropdownOpen(false); // Close dropdown after selection
+
+    // Clear error for assignedTo when user selects a user
+    setErrors({ ...errors, assignedTo: "" });
   };
 
   const validateForm = () => {
@@ -96,8 +119,8 @@ const TaskCreation = () => {
       await axios.post("http://localhost:5000/api/tasks", taskData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
       toast.success("Task created successfully!");
 
@@ -106,7 +129,7 @@ const TaskCreation = () => {
         name: "",
         description: "",
         expireDate: "",
-        assignedTo: ""
+        assignedTo: "",
       });
     } catch (err) {
       console.error("Error creating task:", err);
@@ -114,6 +137,11 @@ const TaskCreation = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Toggle the dropdown visibility
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
   };
 
   return (
@@ -153,35 +181,62 @@ const TaskCreation = () => {
           <div className="task-wrapper">
             <div className="task-creation-input-group">
               <FiCalendar className="task-creation-input-icon" />
-              <input
-                type="date"
-                name="expireDate"
-                value={taskData.expireDate}
-                onChange={handleInputChange}
-                className="task-creation-date-input"
-              />
 
+              {/* Use DatePicker from react-datepicker */}
+              <DatePicker
+                selected={
+                  taskData.expireDate
+                    ? new Date(
+                        taskData.expireDate.split("/").reverse().join("-")
+                      )
+                    : null
+                }
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                className="task-creation-date-input"
+                placeholderText="dd/mm/yyyy"
+              />
               {errors.expireDate && (
                 <span className="error">{errors.expireDate}</span>
               )}
             </div>
 
             <div className="task-creation-input-group">
-              <FiUser className="task-creation-input-icon" />
-              <select
-                name="assignedTo"
-                value={taskData.assignedTo}
-                onChange={handleInputChange}
-                className="task-creation-select"
-              >
-                <option value="">Select User For the Task</option>
-                {users.map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.fullName}
-                  </option>
-                ))}
-              </select>
-              <FiChevronDown className="task-creation-select-arrow" />
+              {/* Custom Dropdown for selecting a user */}
+              <div className="custom-dropdown">
+                <div
+                  className="custom-dropdown-header"
+                  onClick={toggleDropdown}
+                >
+                  {taskData.assignedTo
+                    ? users.find((user) => user._id === taskData.assignedTo)
+                        .fullName
+                    : "Select User For the Task"}
+                  <FiChevronDown className="dropdown-arrow" />
+                </div>
+
+                {dropdownOpen && (
+                  <div className="custom-dropdown-list">
+                    {users.map((user) => (
+                      <div
+                        key={user._id}
+                        className="custom-dropdown-item"
+                        onClick={() => handleSelectUser(user._id)}
+                      >
+                        <div className="user-info">
+                          <div className="user-avatar">
+                            {user.fullName.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="user-name">{user.fullName}</div>
+                            <small>{user.role?.name || "Employee"}</small>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               {errors.assignedTo && (
                 <span className="error">{errors.assignedTo}</span>
               )}
