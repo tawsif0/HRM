@@ -332,7 +332,7 @@ const TaskModification = () => {
               </div>
               <div className="task-due-date">
                 <FiCalendar className="icon-spacing" />
-                {new Date(task.expireDate).toLocaleDateString()}
+                {new Date(task.expireDate).toLocaleDateString("en-GB")}
               </div>
             </div>
 

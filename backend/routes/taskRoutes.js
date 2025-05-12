@@ -5,6 +5,20 @@ const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 const upload = require("../config/multerConfig"); // Import the Multer middleware
 const fs = require("fs");
+// Backend (Express.js route)
+router.get("/:userId", authMiddleware, async (req, res) => {
+  const { userId } = req.params; // Get the userId from the URL parameter
+
+  const tasks = await Task.find({ assignedTo: userId });
+
+  // If no tasks are found, return an empty array instead of an error
+  if (tasks.length === 0) {
+    return res.status(200).json([]); // Return an empty array
+  }
+
+  res.status(200).json(tasks); // Return tasks assigned to the user
+});
+
 router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
   if (!req.user.isTaskCreator) {
     return res
@@ -127,7 +141,8 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
     task.completionLink = completionLink;
     task.completionDescription = completionDescription;
     await task.save();
-    res.status(200).json(task);
+
+    res.status(200).json(task); // Ensure task is returned after save
   } catch (err) {
     res.status(500).json({
       message: "Error marking task as half-complete",
@@ -148,26 +163,25 @@ router.put("/complete/:taskId", authMiddleware, async (req, res) => {
         .json({ message: "Task not found or unauthorized" });
     }
 
-    task.isCompleted = true;
+    // Check if the task has expired
+    const currentTime = new Date();
+    if (currentTime > new Date(task.expireDate)) {
+      task.isCompleted = true;
+      task.isExpired = true; // Mark as expired
+    } else {
+      task.isCompleted = true;
+    }
+
     await task.save();
     res.status(200).json(task);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error completing task", error: err.message });
+    res.status(500).json({
+      message: "Error completing task",
+      error: err.message,
+    });
   }
 });
 
 // Get Tasks for Current User
-router.get("/user-tasks", authMiddleware, async (req, res) => {
-  try {
-    const tasks = await Task.find({ assignedTo: req.user._id });
-    res.status(200).json(tasks);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error fetching tasks", error: err.message });
-  }
-});
 
 module.exports = router;

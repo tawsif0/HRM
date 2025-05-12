@@ -1,0 +1,531 @@
+/* SeeMyTask.css */
+:root {
+  --space-black: #0a0c17;
+  --cyber-blue: #00f3ff;
+  --neon-purple: #bc13fe;
+  --holographic-teal: #00ffd5;
+  --cyber-edge: rgba(188, 19, 254, 0.3);
+  --matrix-green: #00ff47;
+  --dark-matter: #07090f;
+  --galaxy-purple: #6c5ce7;
+  --stardust: rgba(255, 255, 255, 0.1);
+}
+
+/* Base Styles */
+.task-container {
+  background: var(--space-black);
+  min-height: 100vh;
+  color: white;
+  font-family: "Space Grotesk", sans-serif;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Header Section */
+.glass-header {
+  background: linear-gradient(
+    152deg,
+    rgba(11, 13, 26, 0.98) 0%,
+    rgba(18, 21, 40, 0.95) 100%
+  );
+  backdrop-filter: blur(40px);
+  padding: 4rem 2rem 6rem;
+  border-bottom: 1px solid var(--cyber-edge);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-content {
+  max-width: 1500px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Holographic Title */
+.holographic-title {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  perspective: 1000px;
+}
+
+.title-gradient {
+  background: linear-gradient(
+    45deg,
+    var(--holographic-teal),
+    var(--neon-purple),
+    var(--cyber-blue)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hologram 8s infinite linear;
+}
+
+.title-glare {
+  position: absolute;
+  top: -50%;
+  left: -30%;
+  width: 160%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  pointer-events: none;
+}
+
+/* Stats Cards */
+.neu-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.neu-stat-card {
+  background: linear-gradient(
+    145deg,
+    rgba(16, 18, 33, 0.9) 0%,
+    rgba(22, 25, 45, 0.9) 100%
+  );
+  border-radius: 20px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(188, 19, 254, 0.2);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.neu-stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.stat-glow {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(188, 19, 254, 0.15) 0%,
+    rgba(0, 243, 255, 0.1) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.stat-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.gradient-teal .stat-icon {
+  color: var(--holographic-teal);
+  filter: drop-shadow(0 0 15px rgba(0, 255, 213, 0.4));
+}
+
+.stat-number {
+  font-size: 2.8rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #fff, #d1d1ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+}
+
+.stat-label {
+  color: #8a93aa;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-left: 10px;
+}
+
+/* Task Board Layout */
+.quantum-task-board {
+  max-width: 1600px;
+  margin: -4rem auto 0;
+  padding: 0 2rem 4rem;
+  position: relative;
+  z-index: 2;
+}
+
+.task-dimension {
+  background: linear-gradient(
+    152deg,
+    rgba(11, 13, 26, 0.95) 0%,
+    rgba(18, 21, 40, 0.9) 100%
+  );
+  border-radius: 30px;
+  margin-bottom: 3rem;
+  border: 1px solid var(--cyber-edge);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* Dimension Headers */
+.dimension-header {
+  padding: 2.5rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.neon-cyber h2 {
+  background: linear-gradient(45deg, var(--cyber-blue), #8a7dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-holo h2 {
+  background: linear-gradient(45deg, var(--holographic-teal), #00ceba);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyber-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--cyber-edge) 50%,
+    transparent 100%
+  );
+  margin-left: 2rem;
+}
+
+/* Task Grid */
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
+  padding: 2.5rem;
+}
+
+/* Stellar Cards */
+.stellar-card {
+  background: linear-gradient(145deg, #0d0f1c, #141729);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(0, 243, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stellar-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 243, 255, 0.1);
+}
+
+.stellar-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 243, 255, 0.1),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.stellar-card:hover::before {
+  left: 100%;
+}
+
+/* Card Content */
+.stellar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.task-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--cyber-blue);
+  letter-spacing: -0.02em;
+}
+
+.wormhole-icon {
+  font-size: 1.5rem;
+  color: var(--holographic-teal);
+  transition: transform 0.3s ease;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.cosmic-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.meta-star {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* Task Details */
+.blackhole-details {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cyber-edge);
+}
+
+.nebula-description {
+  color: #bdc3c7;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.temporal-indicator {
+  background: rgba(0, 243, 255, 0.05);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.time-vortex {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.chrono-icon {
+  color: var(--neon-purple);
+}
+
+.time-flux {
+  font-weight: 500;
+  background: linear-gradient(45deg, #fff, var(--cyber-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.quantum-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.quantum-button {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.quantum-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.quantum-button:hover::before {
+  left: 100%;
+}
+
+.gradient-blue {
+  background: linear-gradient(45deg, #00f3ff, #6c5ce7);
+}
+
+.gradient-red {
+  background: linear-gradient(45deg, #ff4d4d, #bc13fe);
+}
+
+.gradient-purple {
+  background: linear-gradient(45deg, #0d0c0e, #2f2c4475);
+}
+
+.quantum-icon {
+  font-size: 1.2rem;
+}
+
+/* Input Fields */
+.modern-input,
+.modern-textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--cyber-edge);
+  border-radius: 8px;
+  color: white;
+  font-family: inherit;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.modern-input:focus,
+.modern-textarea:focus {
+  outline: none;
+  border-color: var(--cyber-blue);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+/* Completed Tasks */
+.achievement {
+  border-color: var(--matrix-green);
+}
+
+.victory-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 255, 71, 0.1);
+  border-radius: 20px;
+  color: var(--matrix-green);
+}
+
+.badge-core {
+  filter: drop-shadow(0 0 5px var(--matrix-green));
+}
+
+.wormhole-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--cyber-blue);
+  text-decoration: none;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.wormhole-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--cyber-blue);
+  transition: width 0.3s ease;
+}
+
+.wormhole-link:hover::after {
+  width: 100%;
+}
+
+/* Animations */
+@keyframes hologram {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .task-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .holographic-title {
+    font-size: 3rem;
+  }
+
+  .dimension-header {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cyber-line {
+    display: none;
+  }
+
+  .task-grid {
+    padding: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  .quantum-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .holographic-title {
+    font-size: 2.5rem;
+  }
+
+  .neu-stat-card {
+    padding: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+}

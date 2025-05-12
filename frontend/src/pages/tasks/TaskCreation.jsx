@@ -58,11 +58,10 @@ const TaskCreation = () => {
   };
 
   const handleDateChange = (date) => {
-    const formattedDate = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
-    setTaskData({ ...taskData, expireDate: formattedDate });
+    // Directly store the Date object
+    setTaskData({ ...taskData, expireDate: date });
 
+    // Clear any existing errors related to date
     setErrors({ ...errors, expireDate: "" });
   };
 
@@ -170,7 +169,8 @@ const TaskCreation = () => {
       isValid = false;
     }
 
-    if (!taskData.expireDate) {
+    // Ensure expireDate is a valid date object
+    if (!taskData.expireDate || isNaN(new Date(taskData.expireDate))) {
       validationErrors.expireDate = "Expiration date is required";
       isValid = false;
     }
@@ -272,12 +272,8 @@ const TaskCreation = () => {
               <FiCalendar className="task-creation-input-icon" />
               <DatePicker
                 selected={
-                  taskData.expireDate
-                    ? new Date(
-                        taskData.expireDate.split("/").reverse().join("-")
-                      )
-                    : null
-                }
+                  taskData.expireDate ? new Date(taskData.expireDate) : null
+                } // Set Date object or null
                 onChange={handleDateChange}
                 dateFormat="dd/MM/yyyy"
                 className="task-creation-date-input"

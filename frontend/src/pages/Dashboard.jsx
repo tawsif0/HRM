@@ -32,6 +32,7 @@ import MyAttendance from "./MyAttendance";
 import AssignTaskCreator from "./AssignTaskCreator";
 import TaskCreation from "./tasks/TaskCreation";
 import TaskModification from "./tasks/TaskModification";
+import SeeMyTask from "./tasks/SeeMyTask";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -49,6 +50,9 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState(0);
   const [usersWithNotifications, setUsersWithNotifications] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState("");
+
   const navigate = useNavigate();
 
   const toggleDropdown = () => {
@@ -74,6 +78,51 @@ const Dashboard = () => {
     };
 
     fetchNotifications();
+  }, []);
+
+  useEffect(() => {
+    // Fetch the user profile first to get the userId
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/user/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const userId = response.data._id;
+        setCurrentUserId(userId);
+        fetchUserTasks(userId);
+      } catch (err) {
+        toast.error("Failed to fetch user profile");
+      }
+    };
+
+    const fetchUserTasks = async (userId) => {
+      if (userId) {
+        try {
+          const response = await axios.get(
+            `http://localhost:5000/api/tasks/${userId}`, // Fetch tasks for the user
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          setTasks(response.data);
+        } catch (err) {
+          toast.error("Failed to fetch tasks");
+        }
+      }
+    };
+
+    fetchUserProfile(); // Call the function to fetch user profile when the component mounts
   }, []);
 
   // Fetch current user data
@@ -534,6 +583,18 @@ const Dashboard = () => {
                         </div>
                       </>
                     )}
+                    {tasks.length > 0 && (
+                      <>
+                        <div
+                          className="dashboard-sub-items"
+                          onClick={() => setCurrentView("SeeTask")}
+                        >
+                          <FiCalendar className="dashboard-check-icon" />
+                          <span>See My Task</span>
+                        </div>
+                        <div className="divider"></div>
+                      </>
+                    )}
                   </>
                 )}
                 {user?.role?.name === "admin" && (
@@ -826,6 +887,7 @@ const Dashboard = () => {
           {currentView === "task-creator" && <AssignTaskCreator user={user} />}
           {currentView === "createTask" && <TaskCreation user={user} />}
           {currentView === "ModifyTask" && <TaskModification user={user} />}
+          {currentView === "SeeTask" && <SeeMyTask user={user} />}
         </div>
       </main>
     </div>
