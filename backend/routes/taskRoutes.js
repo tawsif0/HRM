@@ -5,18 +5,27 @@ const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 const upload = require("../config/multerConfig"); // Import the Multer middleware
 const fs = require("fs");
+const path = require("path");
 // Backend (Express.js route)
+
 router.get("/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params; // Get the userId from the URL parameter
 
-  const tasks = await Task.find({ assignedTo: userId });
+  try {
+    const tasks = await Task.find({ assignedTo: userId }).populate(
+      "createdBy",
+      "fullName"
+    ); // Populate the createdBy field, only fetching the 'name' field
 
-  // If no tasks are found, return an empty array instead of an error
-  if (tasks.length === 0) {
-    return res.status(200).json([]); // Return an empty array
+    // If no tasks are found, return an empty array instead of an error
+    if (tasks.length === 0) {
+      return res.status(200).json([]); // Return an empty array
+    }
+
+    res.status(200).json(tasks); // Return tasks assigned to the user
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching tasks", error: err });
   }
-
-  res.status(200).json(tasks); // Return tasks assigned to the user
 });
 
 router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
@@ -37,7 +46,7 @@ router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
       createdBy: req.user._id,
       assignedTo,
       expireDate,
-      file,
+      file
     });
 
     await task.save();
@@ -130,23 +139,34 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   const { completionLink, completionDescription } = req.body;
 
   try {
+    // Find the task by its ID
     const task = await Task.findById(taskId);
+
+    // Check if the task exists and if the user is authorized to modify it
     if (!task || task.assignedTo.toString() !== req.user._id.toString()) {
       return res
         .status(404)
         .json({ message: "Task not found or unauthorized" });
     }
 
+    // Update the task fields
     task.isHalfCompleted = true;
-    task.completionLink = completionLink;
-    task.completionDescription = completionDescription;
+    task.gitUrl = completionLink; // Assuming completionLink holds the Git URL
+    task.gitDescription = completionDescription; // Git commit description
+
+    // Save the updated task
     await task.save();
 
-    res.status(200).json(task); // Ensure task is returned after save
+    // Respond with the updated task data
+    res.status(200).json({
+      message: "Task marked as half-complete",
+      task
+    });
   } catch (err) {
+    // Handle any unexpected errors
     res.status(500).json({
       message: "Error marking task as half-complete",
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -177,7 +197,7 @@ router.put("/complete/:taskId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error completing task",
-      error: err.message,
+      error: err.message
     });
   }
 });

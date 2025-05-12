@@ -11,7 +11,7 @@ import {
   FiXCircle,
   FiSend,
   FiCalendar,
-  FiUser,
+  FiUser
 } from "react-icons/fi";
 import "./SeeMyTask.css";
 
@@ -22,8 +22,8 @@ const SeeMyTask = () => {
   const [loading, setLoading] = useState(false);
 
   const [completionDetails, setCompletionDetails] = useState({
-    link: "",
-    description: "",
+    gitUrl: "", // Initialize with an empty string
+    gitDescription: "" // Initialize with an empty string
   });
 
   const [showInputFields, setShowInputFields] = useState(null); // Track if input fields are shown for a specific task
@@ -43,8 +43,8 @@ const SeeMyTask = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+              "Content-Type": "application/json"
+            }
           }
         );
 
@@ -69,8 +69,8 @@ const SeeMyTask = () => {
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json",
-              },
+                "Content-Type": "application/json"
+              }
             }
           );
           setTasks(response.data);
@@ -89,41 +89,103 @@ const SeeMyTask = () => {
     setExpandedTask((prev) => (prev === taskId ? null : taskId));
   };
 
-  const handleHalfCompletion = async (
-    taskId,
-    completionLink,
-    completionDescription
-  ) => {
+  const handleHalfCompletion = async (taskId, gitUrl, gitDescription) => {
     try {
       const response = await axios.put(
         `http://localhost:5000/api/tasks/half-complete/${taskId}`,
-        { completionLink, completionDescription },
+        {
+          completionLink: gitUrl,
+          completionDescription: gitDescription
+        },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
+
+      // Handle success
       toast.success("Task marked as half-complete");
 
+      // Update the task in the state
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task._id === taskId
-            ? {
-                ...task,
-                isHalfCompleted: true,
-                completionLink,
-                completionDescription,
-              }
+            ? { ...task, isHalfCompleted: true, gitUrl, gitDescription }
             : task
         )
       );
 
-      setShowInputFields(null); // Reset input fields state for all tasks
-      setTaskIdForHalfCompletion(null); // Reset the task ID for half completion
+      // Hide input fields and show the Initial Progress button again
+      setShowInputFields(null);
     } catch (err) {
-      toast.error("Error completing task");
+      console.error(err);
+      toast.error("Error marking task as half-complete");
     }
+  };
+  const showHalfCompletionInputs = (taskId) => {
+    setShowInputFields(taskId); // Show input fields for the clicked task only
+    setTaskIdForHalfCompletion(taskId); // Set the task ID for half completion
+  };
+
+  // Input Change Handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCompletionDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value
+    }));
+  };
+
+  const handleCancel = () => {
+    setShowInputFields(null); // Reset the task inputs state
+    setTaskIdForHalfCompletion(null); // Reset the task ID for half completion
+  };
+  const handleDownload = (taskId) => {
+    console.log("Task ID:", taskId); // Log the taskId to ensure it's correct
+
+    const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+    if (!token) {
+      console.error("No token found. Please log in first.");
+      return;
+    }
+
+    // Call the backend API to download the file
+    axios
+      .get(`http://localhost:5000/api/task/download/${taskId}`, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((response) => {
+        // Extract the file name from the response headers (content-disposition)
+        const contentDisposition = response.headers["content-disposition"];
+        let fileName = "downloadedFile"; // Default file name in case we can't extract one
+
+        if (
+          contentDisposition &&
+          contentDisposition.indexOf("attachment") !== -1
+        ) {
+          const matches = /filename="([^;]+)"/.exec(contentDisposition);
+          if (matches != null && matches[1]) {
+            fileName = matches[1];
+          }
+        }
+
+        // Create a URL for the file and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName); // Use the dynamic file name with extension
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      })
+      .catch((err) => {
+        console.error("Error downloading file:", err);
+      });
   };
 
   const handleCompletion = async (taskId) => {
@@ -133,8 +195,8 @@ const SeeMyTask = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
       toast.success("Task completed");
@@ -150,31 +212,12 @@ const SeeMyTask = () => {
       toast.error("Error completing task");
     }
   };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCompletionDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
-
-  const showHalfCompletionInputs = (taskId) => {
-    setShowInputFields(taskId); // Show input fields for the clicked task only
-    setTaskIdForHalfCompletion(taskId); // Set the task ID for half completion
-  };
-
-  const handleCancel = () => {
-    setShowInputFields(null); // Reset the task inputs state
-    setTaskIdForHalfCompletion(null); // Reset the task ID for half completion
-  };
-
   return (
     <div className="task-container">
       <div className="glass-header">
         <h1 className="holographic-title">Task Master</h1>
         <div className="neu-stats">
-          <div className="neu-stat-card gradient-purple">
+          <div className="neu-stat-card">
             <FiClock className="stat-icon" />
             <div className="stat-content">
               <span className="stat-number">
@@ -233,12 +276,12 @@ const SeeMyTask = () => {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
-                          minute: "2-digit",
+                          minute: "2-digit"
                         })}
                       </span>
                       <span className="meta-star">
                         <FiUser className="meta-pulsar" />
-                        {task.createdBy?.name || "Unknown"}
+                        {task.createdBy?.fullName || "Unknown"}
                       </span>
                     </div>
                   </div>
@@ -266,43 +309,88 @@ const SeeMyTask = () => {
                         </div>
                       </div>
 
+                      {/* Initial Progress Button */}
+                      {showInputFields === null && (
+                        <div className="quantum-actions">
+                          <button
+                            className="quantum-button gradient-blue"
+                            onClick={() => showHalfCompletionInputs(task._id)}
+                          >
+                            <FiGitBranch className="quantum-icon" />
+                            <span>Initial Progress</span>
+                            <div className="quantum-glow"></div>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Input Fields and Save/Cancel Buttons */}
+                      {showInputFields === task._id && (
+                        <div className="modern-inputs">
+                          <input
+                            type="text"
+                            name="gitUrl"
+                            value={completionDetails.gitUrl} // Controlled input
+                            onChange={handleInputChange}
+                            placeholder="Git URL"
+                            className="modern-input"
+                          />
+                          <textarea
+                            name="gitDescription"
+                            value={completionDetails.gitDescription} // Controlled input
+                            onChange={handleInputChange}
+                            placeholder="Git Commit Description"
+                            className="modern-input"
+                          />
+                          <div className="quantum-actions">
+                            <button
+                              onClick={() =>
+                                handleHalfCompletion(
+                                  task._id,
+                                  completionDetails.gitUrl,
+                                  completionDetails.gitDescription
+                                )
+                              }
+                              className="quantum-button gradient-green"
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="quantum-button gradient-red"
+                              onClick={handleCancel}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Download Button (unchanged) */}
                       <div className="quantum-actions">
                         <button
-                          className="quantum-button gradient-blue"
-                          onClick={() => showHalfCompletionInputs(task._id)}
+                          className="quantum-button gradient-white"
+                          onClick={() => handleDownload(task._id)}
                         >
-                          <FiGitBranch className="quantum-icon" />
-                          <span>Initiate Progress Protocol</span>
-                          <div className="quantum-glow"></div>
+                          Download
                         </button>
 
                         <button
-                          className="quantum-button gradient-red"
-                          onClick={handleCancel}
+                          className={`quantum-button ${
+                            new Date() > new Date(task.expireDate)
+                              ? "gradient-red"
+                              : "gradient-purple"
+                          } completion-singularity`}
+                          onClick={() => handleCompletion(task._id)}
+                          disabled={task.isCompleted}
                         >
-                          <FiXCircle className="quantum-icon" />
-                          <span>Abort Sequence</span>
+                          <FiCheckCircle className="quantum-icon" />
+                          <span>
+                            {new Date() > new Date(task.expireDate)
+                              ? "Initiate Overdue Protocol"
+                              : "Activate Completion"}
+                          </span>
                           <div className="quantum-glow"></div>
                         </button>
                       </div>
-
-                      <button
-                        className={`quantum-button ${
-                          new Date() > new Date(task.expireDate)
-                            ? "gradient-red"
-                            : "gradient-purple"
-                        } completion-singularity`}
-                        onClick={() => handleCompletion(task._id)}
-                        disabled={task.isCompleted}
-                      >
-                        <FiCheckCircle className="quantum-icon" />
-                        <span>
-                          {new Date() > new Date(task.expireDate)
-                            ? "Initiate Overdue Protocol"
-                            : "Activate Completion"}
-                        </span>
-                        <div className="quantum-glow"></div>
-                      </button>
                     </div>
                   )}
                 </div>
@@ -345,7 +433,7 @@ const SeeMyTask = () => {
                       {new Date(task.updatedAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
-                        year: "numeric",
+                        year: "numeric"
                       })}
                     </span>
                   </div>

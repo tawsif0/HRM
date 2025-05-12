@@ -225,7 +225,6 @@
 }
 
 .stellar-card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(0, 243, 255, 0.1);
 }
 
@@ -255,13 +254,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-}
-
-.task-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--cyber-blue);
-  letter-spacing: -0.02em;
 }
 
 .wormhole-icon {
@@ -346,7 +338,6 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  color: white;
 }
 
 .quantum-button::before {
@@ -378,7 +369,13 @@
 }
 
 .gradient-purple {
-  background: linear-gradient(45deg, #0d0c0e, #2f2c4475);
+  background: linear-gradient(45deg, #00ff9d, #6c5ce7);
+}
+.gradient-green {
+  background: linear-gradient(45deg, #3fff89, #01ff0ecc);
+}
+.gradient-white {
+  background: linear-gradient(45deg, #ffffff, rgba(255, 255, 255, 0.363));
 }
 
 .quantum-icon {

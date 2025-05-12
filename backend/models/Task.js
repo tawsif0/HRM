@@ -6,16 +6,16 @@ const taskSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: true
   },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   expireDate: { type: Date, required: true },
   isCompleted: { type: Boolean, default: false },
+  gitUrl: { type: String, required: false },
+  gitDescription: { type: String, required: false },
   isHalfCompleted: { type: Boolean, default: false },
-  completionLink: { type: String, default: "" },
-  completionDescription: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now },
-  file: { type: String, default: "" }, // Added file field to store file path or name
+  file: { type: String, default: "" } // Added file field to store file path or name
 });
 
 module.exports = mongoose.model("Task", taskSchema);
