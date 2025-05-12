@@ -1,0 +1,70 @@
+/* General container for the page */
+.assign-task-creator-container {
+  padding: 40px 20px;
+}
+
+/* Title */
+.assign-task-creator-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+/* User cards container */
+.assign-task-creator-users {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Individual user card */
+.task-creator-card {
+  background: var(--glass);
+  border-radius: 25px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.task-creator-card:hover {
+  background-color: rgba(65, 75, 85, 0.596);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Assign button */
+.assign-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.remove-button {
+  padding: 10px 20px;
+  background-color: #e04653;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.assign-button:disabled .remove-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.assign-button:not(:disabled):hover {
+  background-color: #45a049;
+}
+.remove-button:not(:disabled):hover {
+  background-color: #e04653a1;
+}

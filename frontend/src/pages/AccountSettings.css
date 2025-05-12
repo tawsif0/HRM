@@ -1,0 +1,97 @@
+.account-settings-container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.account-settings-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #fdfdfd;
+  margin-bottom: 25px;
+}
+
+.account-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.account-settings-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-settings-input-group label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.account-settings-input-icon {
+  display: flex;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 10px 12px;
+  position: relative;
+}
+
+.account-settings-input-icon input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  background: transparent;
+  width: 100%;
+  font-size: 16px;
+  color: white;
+}
+
+.account-settings-input-icon svg {
+  color: cyan;
+  font-size: 18px;
+}
+
+.account-settings-eye {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
+}
+
+.account-settings-save-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.account-settings-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.account-settings-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

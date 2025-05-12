@@ -1,0 +1,379 @@
+/* Container Styles */
+.task-creation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glass Effect Card */
+.task-creation-glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 50px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Header Styles */
+.task-creation-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.task-creation-header h1 {
+  color: #fff;
+  font-size: 2.5rem;
+  margin: 1rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.task-creation-header-accent {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #4ecca3, transparent);
+  opacity: 0.5;
+}
+
+/* Form Styles */
+.task-creation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+}
+.task-inputs {
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 1px rgba(223, 219, 219, 0.219);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.task-creation-input-group input:focus,
+.task-creation-input-group textarea:focus,
+.task-creation-input-group select:focus,
+.task-inputs:focus {
+  box-shadow: 0 0 0 3px rgba(74, 145, 226, 0.212) !important;
+  outline: none;
+}
+.task-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+}
+
+/* Input Group Styles */
+.task-creation-input-group {
+  position: relative;
+}
+
+/* Container Styles */
+.task-creation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+}
+
+/* Calendar Input */
+.task-creation-date-input {
+  width: 100%;
+  padding: 1.2rem 1.2rem 1.2rem 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.task-creation-date-input:focus {
+  box-shadow: 0 0 0 3px rgba(74, 145, 226, 0.212);
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+}
+.react-datepicker-wrapper {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  width: 100%;
+}
+.react-datepicker {
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  font-size: 0.8rem;
+  background-color: #fff;
+  color: #000;
+  border: none !important;
+  border-radius: 0.3rem;
+  display: inline-block;
+  position: relative;
+  line-height: initial;
+}
+/* Calendar Popup */
+.react-datepicker__triangle {
+  display: none;
+}
+
+/* Calendar Header */
+.react-datepicker__header {
+  background-color: #4ecca3;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.react-datepicker__current-month {
+  color: white;
+}
+
+/* Days and Date Styling */
+.react-datepicker__day {
+  background-color: transparent;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(78, 204, 163, 0.4) !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: #4ecca3;
+  color: #fff !important;
+}
+
+.react-datepicker__day--today {
+  font-weight: bold;
+  color: #4ecca3;
+}
+
+/* Navigation Buttons */
+.react-datepicker__navigation--next,
+.react-datepicker__navigation--previous {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.react-datepicker__navigation--previous {
+  left: 10px;
+  top: 15px;
+}
+
+.react-datepicker__navigation--next {
+  right: 10px;
+  top: 15px;
+}
+.react-datepicker__navigation--next:hover,
+.react-datepicker__navigation--previous:hover {
+  color: white;
+}
+/* Month and Year Styling */
+.react-datepicker__month-text {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.react-datepicker__month-text:hover {
+  color: white;
+}
+
+/* Calendar Wrapper */
+.react-datepicker {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background-color: #000;
+  padding: 1rem;
+}
+
+/* Clear and Today Buttons */
+.react-datepicker__clear-button,
+.react-datepicker__today-button {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.react-datepicker__clear-button:hover,
+.react-datepicker__today-button:hover {
+  background: rgba(78, 204, 163, 0.6);
+}
+
+/* Icon Styles */
+.task-creation-input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 45%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.705);
+  font-size: 1.2rem;
+  z-index: 2;
+}
+
+/* Select Styles */
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.custom-dropdown-header:hover {
+  background: rgba(255, 255, 255, 0.158);
+}
+
+.dropdown-arrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.custom-dropdown-list {
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(12, 12, 12, 0.945);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-top: 0.2rem;
+  position: absolute;
+  z-index: 13;
+}
+
+.custom-dropdown-item {
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.custom-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+/* Button Styles */
+.task-creation-submit-button {
+  position: relative;
+  background: linear-gradient(45deg, #4ecca3, #45b7af);
+  border: none;
+  padding: 1.2rem 2rem;
+  color: white;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.task-creation-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(78, 204, 163, 0.4);
+}
+
+.task-creation-button-glow {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+  width: 50px;
+  height: 100%;
+  left: -50%;
+  top: 0;
+  transform: skewX(-45deg);
+  transition: all 0.6s ease;
+}
+
+.task-creation-submit-button:hover .task-creation-button-glow {
+  left: 150%;
+}
+
+.task-creation-submit-button:hover .task-creation-button-icon {
+  transform: translateX(3px);
+}
+
+/* Error Message Styling */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  padding-left: 20px;
+  position: absolute;
+  left: 0;
+  display: block;
+}
+
+.task-creation-input-group input,
+.task-creation-input-group textarea,
+.task-creation-input-group select {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.task-file-input {
+  display: none; /* Hide the default file input */
+}
+
+.task-file-label {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem 1.5rem !important;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.upload-icon {
+  margin-right: 10px; /* Space between icon and text */
+}
+
+.task-file-label:hover {
+  background: rgba(255, 255, 255, 0.158);
+}

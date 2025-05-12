@@ -1,0 +1,231 @@
+/* SexyCalendar.css */
+.react-calendar {
+  background-color: #1a1b2f;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  padding: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  margin: 1.5rem 0px;
+}
+.react-calendar__tile {
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.react-calendar__tile:hover {
+  background: rgba(5, 238, 255, 0.15);
+  border: 3px solid #4de1f5;
+  color: #ffffff !important;
+  cursor: pointer;
+}
+.react-calendar__tile--now {
+  background: rgba(77, 171, 245, 0.15);
+  border: 2px solid #4de1f5;
+  color: #ffffff;
+}
+.selected-holiday {
+  background: #ff4b5c !important;
+  color: white !important;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d9534f;
+}
+
+.react-calendar__navigation button {
+  color: #f0f0f0;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.react-calendar__month-view__weekdays {
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+/* Calendar Navigation Styling - Elegant & Realistic Look */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.react-calendar__navigation button {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.react-calendar__navigation button:hover {
+  transform: scale(1.05);
+}
+
+.react-calendar__navigation__label {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 8px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.react-calendar__navigation__label:hover {
+  cursor: pointer;
+}
+.react-calendar__month-view__days__day--weekend {
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays {
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1rem !important;
+}
+/* absent present */
+.present-day {
+  background-color: #4caf50 !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.absent-day {
+  background-color: #ff0000 !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.selected-holiday {
+  background-color: #d32f2f !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.calendar-dropdown-container {
+  padding: 1rem;
+  background-color: rgba(65, 75, 85, 0.096);
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.absent-modal {
+  background: rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(9.5px);
+  border-radius: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  width: 90%;
+  max-width: 440px;
+  margin: auto;
+  position: relative;
+  transform: translateY(20px);
+  animation: modalEntrance 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  overflow: hidden;
+  color: white !important;
+}
+
+@keyframes modalEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlayFade 0.3s ease-out;
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Ensure vertical alignment */
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  line-height: 1; /* Optional: adjust line height */
+}
+
+.modal-header h4 {
+  font-size: 1.25rem;
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+.modal-header::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 100%);
+  opacity: 0.3;
+}
+
+.close-icon {
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: white;
+  transition: all 0.3s ease;
+  background: #6c757d91;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.close-icon:hover {
+  color: #ff6b6b;
+  transform: rotate(90deg);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.modal-body {
+  margin-top: 1rem;
+}
