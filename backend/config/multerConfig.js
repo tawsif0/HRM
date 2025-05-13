@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname); // Create unique file name using timestamp
-  },
+  }
 });
 
 // Multer file filter to accept only specific file types (images, zip, etc.)
@@ -18,8 +18,9 @@ const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/jpeg",
     "image/png",
+    "application/pdf",
     "application/zip",
-    "application/x-zip-compressed", // Added additional zip MIME type
+    "application/x-zip-compressed" // Added additional zip MIME type
   ];
 
   if (allowedTypes.includes(file.mimetype)) {
@@ -35,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Max size of 5MB
+  limits: { fileSize: 5 * 1024 * 1024 } // Max size of 5MB
 });
 
 module.exports = upload; // Export Multer config to be used in routes

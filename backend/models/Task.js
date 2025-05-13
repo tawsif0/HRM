@@ -15,7 +15,7 @@ const taskSchema = new mongoose.Schema({
   gitDescription: { type: String, required: false },
   isHalfCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
-  file: { type: String, default: "" } // Added file field to store file path or name
+  file: { type: String, default: "" }
 });
 
 module.exports = mongoose.model("Task", taskSchema);

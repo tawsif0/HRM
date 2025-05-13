@@ -4,27 +4,58 @@ const User = require("../models/User");
 const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 const upload = require("../config/multerConfig"); // Import the Multer middleware
-const fs = require("fs");
 const path = require("path");
-// Backend (Express.js route)
+const fs = require("fs"); // File system module to check file existence and serve it
 
 router.get("/:userId", authMiddleware, async (req, res) => {
-  const { userId } = req.params; // Get the userId from the URL parameter
+  const { userId } = req.params;
+  const { taskId } = req.query;
 
   try {
-    const tasks = await Task.find({ assignedTo: userId }).populate(
-      "createdBy",
-      "fullName"
-    ); // Populate the createdBy field, only fetching the 'name' field
+    // Handle file download request
+    if (taskId) {
+      const task = await Task.findOne({
+        _id: taskId,
+        $or: [{ createdBy: userId }, { assignedTo: userId }]
+      });
 
-    // If no tasks are found, return an empty array instead of an error
-    if (tasks.length === 0) {
-      return res.status(200).json([]); // Return an empty array
+      if (!task || !task.file) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Construct absolute path to uploads directory
+      const uploadsDir = path.join(process.cwd(), "uploads");
+      const filePath = path.join(uploadsDir, task.file);
+
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found on server" });
+      }
+
+      // Extract original filename with extension
+      const originalFileName = task.file.split("-").slice(1).join("-");
+
+      // Use res.download with original filename
+      return res.download(filePath, originalFileName, (err) => {
+        if (err && !res.headersSent) {
+          res.status(500).json({
+            message: "Download failed",
+            error: err.message
+          });
+        }
+      });
     }
 
-    res.status(200).json(tasks); // Return tasks assigned to the user
+    // Handle normal tasks request
+    const tasks = await Task.find({ assignedTo: userId })
+      .populate("createdBy", "fullName")
+      .lean();
+
+    res.status(200).json(tasks);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching tasks", error: err });
+    res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
   }
 });
 
@@ -133,6 +164,7 @@ router.put(
     }
   }
 );
+
 // Mark Task as Half-Complete
 router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;

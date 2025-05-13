@@ -11,6 +11,7 @@ const holidayRoutes = require("./routes/holidayRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const tasksRoutes = require("./routes/tasksRoutes");
+const downloadRoutes = require("./routes/downloadRoutes");
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -38,6 +39,7 @@ app.use("/api/holidays", holidayRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/task", tasksRoutes);
+app.use("/api/download", downloadRoutes);
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 app.use((err, req, res, next) => {
   console.error(err);

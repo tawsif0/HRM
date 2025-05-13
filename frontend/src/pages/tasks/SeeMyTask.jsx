@@ -143,48 +143,60 @@ const SeeMyTask = () => {
     setTaskIdForHalfCompletion(null); // Reset the task ID for half completion
   };
   const handleDownload = (taskId) => {
-    console.log("Task ID:", taskId); // Log the taskId to ensure it's correct
-
-    const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+    const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No token found. Please log in first.");
+      toast.error("Please log in to download files");
       return;
     }
 
-    // Call the backend API to download the file
-    axios
-      .get(`http://localhost:5000/api/task/download/${taskId}`, {
-        responseType: "blob",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+    axios({
+      method: "get",
+      url: `http://localhost:5000/api/tasks/${taskId}`, // Use correct endpoint
+      responseType: "blob",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((response) => {
-        // Extract the file name from the response headers (content-disposition)
+        // Extract filename from headers with proper encoding
         const contentDisposition = response.headers["content-disposition"];
-        let fileName = "downloadedFile"; // Default file name in case we can't extract one
+        let fileName = "download";
 
-        if (
-          contentDisposition &&
-          contentDisposition.indexOf("attachment") !== -1
-        ) {
-          const matches = /filename="([^;]+)"/.exec(contentDisposition);
-          if (matches != null && matches[1]) {
-            fileName = matches[1];
+        if (contentDisposition) {
+          const fileNameRegex =
+            /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+          const matches = fileNameRegex.exec(contentDisposition);
+          if (matches && matches[1]) {
+            fileName = decodeURIComponent(matches[1]);
           }
         }
 
-        // Create a URL for the file and trigger the download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        // Create proper blob with type from response
+        const blob = new Blob([response.data], {
+          type: response.headers["content-type"]
+        });
+
+        // Create temporary link and simulate click
         const link = document.createElement("a");
+        const url = window.URL.createObjectURL(blob);
+
         link.href = url;
-        link.setAttribute("download", fileName); // Use the dynamic file name with extension
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
-        link.remove();
+
+        // Cleanup
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(link);
+          toast.success(`${fileName} downloaded successfully`);
+        }, 100);
       })
-      .catch((err) => {
-        console.error("Error downloading file:", err);
+      .catch((error) => {
+        console.error("Download error:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "Download failed";
+        toast.error(errorMessage);
       });
   };
 
@@ -368,7 +380,7 @@ const SeeMyTask = () => {
                       <div className="quantum-actions">
                         <button
                           className="quantum-button gradient-white"
-                          onClick={() => handleDownload(task._id)}
+                          onClick={() => handleDownload(task._id)} // Pass currentUserId and task._id
                         >
                           Download
                         </button>
