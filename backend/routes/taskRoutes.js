@@ -6,7 +6,7 @@ const router = express.Router();
 const upload = require("../config/multerConfig"); // Import the Multer middleware
 const path = require("path");
 const fs = require("fs"); // File system module to check file existence and serve it
-
+const moment = require("moment-timezone"); // Import moment-timezone
 router.get("/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params;
   const { taskId } = req.query;
@@ -16,7 +16,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
     if (taskId) {
       const task = await Task.findOne({
         _id: taskId,
-        $or: [{ createdBy: userId }, { assignedTo: userId }]
+        $or: [{ createdBy: userId }, { assignedTo: userId }],
       });
 
       if (!task || !task.file) {
@@ -39,7 +39,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
         if (err && !res.headersSent) {
           res.status(500).json({
             message: "Download failed",
-            error: err.message
+            error: err.message,
           });
         }
       });
@@ -54,7 +54,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Server error",
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -77,7 +77,7 @@ router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
       createdBy: req.user._id,
       assignedTo,
       expireDate,
-      file
+      file,
     });
 
     await task.save();
@@ -192,18 +192,19 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
     // Respond with the updated task data
     res.status(200).json({
       message: "Task marked as half-complete",
-      task
+      task,
     });
   } catch (err) {
     // Handle any unexpected errors
     res.status(500).json({
       message: "Error marking task as half-complete",
-      error: err.message
+      error: err.message,
     });
   }
 });
 
 // Complete Task
+
 router.put("/complete/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;
 
@@ -224,12 +225,17 @@ router.put("/complete/:taskId", authMiddleware, async (req, res) => {
       task.isCompleted = true;
     }
 
+    // Set completion date and time in Bangladesh Standard Time (BST)
+    const completionDate = moment().tz("Asia/Dhaka").format(); // Format as an ISO 8601 string (YYYY-MM-DDTHH:mm:ss.sssZ)
+
+    task.completionDate = completionDate; // Save the formatted date and time
+
     await task.save();
     res.status(200).json(task);
   } catch (err) {
     res.status(500).json({
       message: "Error completing task",
-      error: err.message
+      error: err.message,
     });
   }
 });

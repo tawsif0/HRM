@@ -383,8 +383,7 @@
 }
 
 /* Input Fields */
-.modern-input,
-.modern-textarea {
+.modern-input {
   width: 100%;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.3);
@@ -396,8 +395,7 @@
   transition: all 0.3s ease;
 }
 
-.modern-input:focus,
-.modern-textarea:focus {
+.modern-input:focus {
   outline: none;
   border-color: var(--cyber-blue);
   box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);

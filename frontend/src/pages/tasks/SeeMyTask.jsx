@@ -11,10 +11,10 @@ import {
   FiXCircle,
   FiSend,
   FiCalendar,
-  FiUser
+  FiUser,
 } from "react-icons/fi";
 import "./SeeMyTask.css";
-
+import moment from "moment-timezone";
 const SeeMyTask = () => {
   const [tasks, setTasks] = useState([]);
   const [currentUserId, setCurrentUserId] = useState("");
@@ -23,7 +23,7 @@ const SeeMyTask = () => {
 
   const [completionDetails, setCompletionDetails] = useState({
     gitUrl: "", // Initialize with an empty string
-    gitDescription: "" // Initialize with an empty string
+    gitDescription: "", // Initialize with an empty string
   });
 
   const [showInputFields, setShowInputFields] = useState(null); // Track if input fields are shown for a specific task
@@ -43,8 +43,8 @@ const SeeMyTask = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
 
@@ -69,8 +69,8 @@ const SeeMyTask = () => {
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-              }
+                "Content-Type": "application/json",
+              },
             }
           );
           setTasks(response.data);
@@ -95,13 +95,13 @@ const SeeMyTask = () => {
         `http://localhost:5000/api/tasks/half-complete/${taskId}`,
         {
           completionLink: gitUrl,
-          completionDescription: gitDescription
+          completionDescription: gitDescription,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
@@ -134,7 +134,7 @@ const SeeMyTask = () => {
     const { name, value } = e.target;
     setCompletionDetails((prevDetails) => ({
       ...prevDetails,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -154,8 +154,8 @@ const SeeMyTask = () => {
       url: `http://localhost:5000/api/tasks/${taskId}`, // Use correct endpoint
       responseType: "blob",
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         // Extract filename from headers with proper encoding
@@ -173,7 +173,7 @@ const SeeMyTask = () => {
 
         // Create proper blob with type from response
         const blob = new Blob([response.data], {
-          type: response.headers["content-type"]
+          type: response.headers["content-type"],
         });
 
         // Create temporary link and simulate click
@@ -207,8 +207,8 @@ const SeeMyTask = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       toast.success("Task completed");
@@ -216,7 +216,12 @@ const SeeMyTask = () => {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task._id === taskId
-            ? { ...task, isCompleted: true, isHalfCompleted: false }
+            ? {
+                ...task,
+                isCompleted: true,
+                isHalfCompleted: false,
+                completionDate: response.data.completionDate, // update the completion date
+              }
             : task
         )
       );
@@ -224,6 +229,7 @@ const SeeMyTask = () => {
       toast.error("Error completing task");
     }
   };
+
   return (
     <div className="task-container">
       <div className="glass-header">
@@ -288,7 +294,7 @@ const SeeMyTask = () => {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
-                          minute: "2-digit"
+                          minute: "2-digit",
                         })}
                       </span>
                       <span className="meta-star">
@@ -421,36 +427,81 @@ const SeeMyTask = () => {
           <div className="task-orbit">
             {tasks
               .filter((task) => task.isCompleted)
-              .map((task) => (
-                <div key={task._id} className="stellar-card achievement">
-                  <div className="stellar-header">
-                    <h3 className="task-title">{task.name}</h3>
-                    <div className="victory-badge">
-                      <FiCheckCircle className="badge-core" />
-                      <div className="badge-aurora"></div>
-                      <span>
-                        {task.isExpired
-                          ? "Galactic Overdue"
-                          : "Perfect Execution"}
+              .map((task) => {
+                const expireDate = task.expireDate
+                  ? moment(task.expireDate).tz("Asia/Dhaka")
+                  : null;
+                const completionDate = task.completionDate
+                  ? moment(task.completionDate).tz("Asia/Dhaka")
+                  : null;
+
+                let isTaskExpired = true; // Default to expired for safety
+
+                if (expireDate && completionDate) {
+                  // Create buffer period (12 hours after expiration)
+                  const bufferEnd = expireDate.clone().add(12, "hours");
+
+                  // Check if completion is after buffer period
+                  isTaskExpired = completionDate.isAfter(bufferEnd);
+                }
+
+                return (
+                  <div
+                    key={task._id}
+                    className={`stellar-card ${
+                      isTaskExpired ? "supernova" : ""
+                    }`}
+                  >
+                    <div className="stellar-header">
+                      <h3 className="task-title">{task.name}</h3>
+                      <div className="victory-badge">
+                        <FiCheckCircle className="badge-core" />
+                        <div className="badge-aurora"></div>
+                        <span>
+                          {isTaskExpired
+                            ? "Galactic Overdue"
+                            : "Perfect Execution"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="cosmic-meta">
+                      <span className="meta-star">
+                        <FiUser className="meta-pulsar" />
+                        {task.createdBy?.fullName || "Unknown"}
                       </span>
+
+                      {expireDate && (
+                        <span className="meta-star">
+                          <FiCalendar className="meta-pulsar" />
+                          Expiry:{" "}
+                          {new Date(expireDate).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      )}
+
+                      {completionDate && (
+                        <span className="meta-star">
+                          <FiCalendar className="meta-pulsar" />
+                          Completed:{" "}
+                          {new Date(completionDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <div className="cosmic-meta">
-                    <span className="meta-star">
-                      <FiUser className="meta-pulsar" />
-                      {task.createdBy?.name || "Unknown"}
-                    </span>
-                    <span className="meta-star">
-                      <FiCalendar className="meta-pulsar" />
-                      {new Date(task.updatedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric"
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ const taskSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   expireDate: { type: Date, required: true },
@@ -15,7 +15,8 @@ const taskSchema = new mongoose.Schema({
   gitDescription: { type: String, required: false },
   isHalfCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
-  file: { type: String, default: "" }
+  file: { type: String, default: "" },
+  completionDate: { type: String, default: null }, // New field to store formatted completion date and time
 });
 
 module.exports = mongoose.model("Task", taskSchema);
