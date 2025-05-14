@@ -363,7 +363,9 @@
 .gradient-blue {
   background: linear-gradient(45deg, #00f3ff, #6c5ce7);
 }
-
+.gradient-cyan {
+  background: linear-gradient(45deg, #00f7ff, #00eeffb9);
+}
 .gradient-red {
   background: linear-gradient(45deg, #ff4d4d, #bc13fe);
 }
@@ -405,7 +407,14 @@
 .achievement {
   border-color: var(--matrix-green);
 }
-
+.supernova {
+  border-color: #ff4d4d;
+}
+.task-orbit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .victory-badge {
   display: inline-flex;
   align-items: center;
@@ -415,34 +424,14 @@
   border-radius: 20px;
   color: var(--matrix-green);
 }
-
-.badge-core {
-  filter: drop-shadow(0 0 5px var(--matrix-green));
-}
-
-.wormhole-link {
+.failed-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--cyber-blue);
-  text-decoration: none;
-  margin-top: 1rem;
-  position: relative;
-}
-
-.wormhole-link::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--cyber-blue);
-  transition: width 0.3s ease;
-}
-
-.wormhole-link:hover::after {
-  width: 100%;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 0, 119, 0.1);
+  border-radius: 20px;
+  color: #ff4d4d;
 }
 
 /* Animations */

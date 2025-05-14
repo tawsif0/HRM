@@ -449,20 +449,31 @@ const SeeMyTask = () => {
                   <div
                     key={task._id}
                     className={`stellar-card ${
-                      isTaskExpired ? "supernova" : ""
+                      isTaskExpired ? "supernova" : "achievement"
                     }`}
                   >
                     <div className="stellar-header">
                       <h3 className="task-title">{task.name}</h3>
-                      <div className="victory-badge">
-                        <FiCheckCircle className="badge-core" />
-                        <div className="badge-aurora"></div>
-                        <span>
-                          {isTaskExpired
-                            ? "Galactic Overdue"
-                            : "Perfect Execution"}
-                        </span>
-                      </div>
+
+                      {isTaskExpired ? (
+                        // Failed badge for expired tasks
+                        <>
+                          <div className="failed-badge">
+                            <FiXCircle className="badge-core" />
+                            <div className="badge-aurora"></div>
+                            <span>Galactic Overdue</span>
+                          </div>
+                        </>
+                      ) : (
+                        // Victory badge for on-time tasks
+                        <>
+                          <div className="victory-badge">
+                            <FiCheckCircle className="badge-core" />
+                            <div className="badge-aurora"></div>
+                            <span>Perfect Execution</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="cosmic-meta">
                       <span className="meta-star">

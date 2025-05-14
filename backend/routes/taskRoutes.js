@@ -164,7 +164,32 @@ router.put(
     }
   }
 );
+router.get("/half-completed/:taskId", authMiddleware, async (req, res) => {
+  try {
+    const { taskId } = req.params;
 
+    // Find the task by ID
+    const task = await Task.findById(taskId);
+
+    // Check if the task exists and is half-completed
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (!task.isHalfCompleted) {
+      return res.status(200).json({ message: "Task is not half-completed" });
+    }
+
+    // If the task is half-completed, send the gitUrl and gitDescription
+    return res.status(200).json({
+      gitUrl: task.gitUrl,
+      gitDescription: task.gitDescription,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // Mark Task as Half-Complete
 router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;

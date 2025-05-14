@@ -312,3 +312,21 @@
   position: relative;
   margin-bottom: 1rem;
 }
+.modal-overlays {
+  position: absolute; /* Positioning will be based on the task button's position */
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal-body a {
+  padding: 0px 10px;
+  color: rgb(235, 227, 227);
+  text-decoration: none;
+  cursor: pointer;
+}
+.modal-body a:hover {
+  color: white;
+  text-decoration: underline;
+}

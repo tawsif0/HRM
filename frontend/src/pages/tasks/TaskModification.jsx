@@ -9,6 +9,7 @@ import {
   FiTrash2,
   FiUpload,
   FiCloud,
+  FiX,
 } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -36,7 +37,11 @@ const TaskModification = () => {
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false); // To control modal visibility
+  const [gitData, setGitData] = useState({
+    gitUrl: "",
+    gitDescription: "",
+  });
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -286,6 +291,37 @@ const TaskModification = () => {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+  const handleProgressClick = async (taskId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/tasks/half-completed/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data) {
+        setGitData({
+          gitUrl: response.data.gitUrl || "",
+          gitDescription: response.data.gitDescription || "",
+        });
+      } else {
+        setGitData({
+          gitUrl: "",
+          gitDescription: "",
+        });
+      }
+      setIsModalOpen(true);
+    } catch (err) {
+      toast.error("Failed to fetch progress data");
+    }
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="task-management-container">
@@ -299,12 +335,56 @@ const TaskModification = () => {
               </div>
               <div className="task-card-buttons">
                 <button
-                  onClick={() => handleEditTask(task._id)}
-                  className="task-card-edit-button"
+                  className="quantum-button gradient-cyan"
+                  onClick={() => handleProgressClick(task._id)}
                 >
-                  <FiClipboard className="icon-spacing" />
-                  {selectedTaskId === task._id ? "Close Edit" : "Edit Task"}
+                  Progress
                 </button>
+                {isModalOpen && (
+                  <div className="modal-overlay">
+                    <div className="absent-modal">
+                      <div className="modal-header">
+                        <h2>Progress Details</h2>
+                        <FiX onClick={closeModal} className="close-icon" />
+                      </div>
+                      <div className="modal-body">
+                        {gitData.gitUrl && gitData.gitDescription ? (
+                          <>
+                            <p>
+                              <strong>Git URL:</strong>{" "}
+                              <a
+                                href={gitData.gitUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {gitData.gitUrl}
+                              </a>
+                            </p>
+                            <p>
+                              <strong>Git Description:</strong>{" "}
+                              {gitData.gitDescription}
+                            </p>
+                          </>
+                        ) : (
+                          <p>No progress information available.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {task.isCompleted ? (
+                  // If the task is completed, show the "Completed" span
+                  <span className="victory-badge">Completed</span>
+                ) : (
+                  // If the task is not completed, show the "Edit Task" button
+                  <button
+                    onClick={() => handleEditTask(task._id)}
+                    className="task-card-edit-button"
+                  >
+                    <FiClipboard className="icon-spacing" />
+                    {selectedTaskId === task._id ? "Close Edit" : "Edit Task"}
+                  </button>
+                )}
                 <button
                   onClick={() => handleDeleteTask(task._id)}
                   className="task-card-delete-button"
