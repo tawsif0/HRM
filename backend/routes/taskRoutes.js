@@ -6,7 +6,16 @@ const router = express.Router();
 const upload = require("../config/multerConfig"); // Import the Multer middleware
 const path = require("path");
 const fs = require("fs"); // File system module to check file existence and serve it
-const moment = require("moment-timezone"); // Import moment-timezone
+const moment = require("moment-timezone");
+function saveFileBuffer(taskId, file) {
+  const ext = path.extname(file.originalname);
+  const fileName = `${taskId}${ext}`;
+  const uploadDir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+  const filePath = path.join(uploadDir, fileName);
+  fs.writeFileSync(filePath, file.buffer);
+  return fileName;
+}
 router.get("/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params;
   const { taskId } = req.query;
@@ -68,20 +77,25 @@ router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
 
   try {
     const { name, description, expireDate, assignedTo } = req.body;
-    const file = req.file ? req.file.path : null; // Get the file path if uploaded
 
-    // Create a new task with provided data, including file path if a file is uploaded
+    // Create task first
     const task = new Task({
       name,
       description,
       createdBy: req.user._id,
       assignedTo,
       expireDate,
-      file,
     });
-
     await task.save();
-    res.status(201).json(task); // Respond with the created task
+
+    // Handle uploaded file
+    if (req.file && req.file.buffer) {
+      const fileName = saveFileBuffer(task._id, req.file);
+      task.file = fileName;
+      await task.save();
+    }
+
+    res.status(201).json(task);
   } catch (err) {
     console.error("Error creating task:", err);
     res
@@ -93,28 +107,32 @@ router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
 // Fetch all tasks (including the assignee and creator)
 router.delete("/:taskId", authMiddleware, async (req, res) => {
   const { taskId } = req.params;
-
   try {
+    // Delete the task document
     const task = await Task.findByIdAndDelete(taskId);
-
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    // Check if a file is associated with the task and delete it
+    // If a file is associated, delete it from uploads
     if (task.file) {
-      const filePath = task.file; // Path to the uploaded file
-
-      // Delete the file from the server's file system
-      fs.unlinkSync(filePath); // This deletes the file from the uploads folder
-
-      console.log(`Deleted file: ${filePath}`); // Optional: for logging purposes
+      const filePath = path.join(process.cwd(), "uploads", task.file);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted file: ${filePath}`);
+        } catch (unlinkErr) {
+          console.error("Error deleting file:", unlinkErr);
+        }
+      }
     }
 
-    res.status(200).json({ message: "Task deleted successfully" });
+    return res
+      .status(200)
+      .json({ message: "Task and its file deleted successfully" });
   } catch (err) {
     console.error("Error deleting task:", err);
-    res
+    return res
       .status(500)
       .json({ message: "Failed to delete task", error: err.message });
   }
@@ -127,7 +145,6 @@ router.put(
   async (req, res) => {
     const { taskId } = req.params;
     const { name, description, expireDate, assignedTo } = req.body;
-    const file = req.file ? req.file.path : null; // Get the new file path if uploaded
 
     try {
       const task = await Task.findById(taskId);
@@ -137,27 +154,34 @@ router.put(
           .json({ message: "Task not found or unauthorized" });
       }
 
-      // If a new file is uploaded, delete the previous one
-      if (file && task.file) {
-        const oldFilePath = task.file;
-        // Remove the previous file from the server
-        fs.unlink(oldFilePath, (err) => {
-          if (err) {
-            console.error("Error deleting the old file:", err);
+      // If a new file is uploaded, delete old and save new
+      if (req.file && req.file.buffer) {
+        // Delete old file if exists
+        if (task.file) {
+          const oldPath = path.join(process.cwd(), "uploads", task.file);
+          if (fs.existsSync(oldPath)) {
+            try {
+              fs.unlinkSync(oldPath);
+            } catch (e) {
+              console.error("Failed to delete old file", e);
+            }
           }
-        });
+        }
+        // Save new file buffer
+        const newFileName = saveFileBuffer(taskId, req.file);
+        task.file = newFileName;
       }
 
-      // Update task properties if provided
-      task.name = name || task.name;
-      task.description = description || task.description;
-      task.expireDate = expireDate || task.expireDate;
-      task.assignedTo = assignedTo || task.assignedTo;
-      if (file) task.file = file; // Update file if a new file is uploaded
+      // Update other fields
+      if (name) task.name = name;
+      if (description) task.description = description;
+      if (expireDate) task.expireDate = expireDate;
+      if (assignedTo) task.assignedTo = assignedTo;
 
       await task.save();
       res.status(200).json(task);
     } catch (err) {
+      console.error("Error modifying task:", err);
       res
         .status(500)
         .json({ message: "Error modifying task", error: err.message });

@@ -42,7 +42,7 @@ const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [roleName, setRoleName] = useState("");
-  const [currentView, setCurrentView] = useState(null);
+  const [currentView, setCurrentView] = useState("main");
   const [selectedRoles, setSelectedRoles] = useState({});
   const [editingUsers, setEditingUsers] = useState({});
   const [fixedRoles, setFixedRoles] = useState({});
@@ -520,7 +520,10 @@ const Dashboard = () => {
         </div>
 
         <nav className="dashboard-sidebar-nav">
-          <div className="dashboard-nav-item">
+          <div
+            className="dashboard-nav-item"
+            onClick={() => setCurrentView("main")}
+          >
             <FiHome className="dashboard-nav-icon" />
             {!isCollapsed && <span>Dashboard</span>}
           </div>
@@ -733,6 +736,9 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-content-area">
+          {(currentView === "main" || !currentView) && (
+            <h1 className="text-center">Welcome to Arbeit Technology HRM</h1>
+          )}
           {currentView === "create" && (
             <div className="form-container create-role-form">
               <div className="form-header">
@@ -753,7 +759,6 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-
           {currentView === "assign" && (
             <div className="form-container assign-role-form">
               <div className="form-header">
@@ -777,7 +782,6 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-
           {currentView === "modify" && (
             <div className="role-management-section">
               <div className="form-header">
@@ -845,7 +849,6 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-
           {currentView === "see" && user?.role?.name === "admin" && (
             <div className="form-container see-role-form">
               <div className="form-header">
@@ -879,7 +882,6 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-
           {currentView === "accountSettings" && <AccountSettings user={user} />}
           {currentView === "attendances" && <Attendance user={user} />}
           {currentView === "gattendances" && <GiveAttendance user={user} />}

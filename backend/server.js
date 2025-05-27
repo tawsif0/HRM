@@ -39,7 +39,7 @@ app.use("/api/holidays", holidayRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/task", tasksRoutes);
-app.use("/api/download", downloadRoutes);
+app.use("/api", downloadRoutes);
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 app.use((err, req, res, next) => {
   console.error(err);

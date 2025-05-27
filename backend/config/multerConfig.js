@@ -1,42 +1,31 @@
 const multer = require("multer");
-const fs = require("fs");
+const path = require("path");
 
-// Set up Multer storage configuration (storing files in the 'uploads' directory)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Store files in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Create unique file name using timestamp
-  }
-});
+// Use memoryStorage so we can rename after task creation
+const storage = multer.memoryStorage();
 
-// Multer file filter to accept only specific file types (images, zip, etc.)
 const fileFilter = (req, file, cb) => {
-  console.log("File MIME Type: ", file.mimetype); // Log MIME type to check what type is being received
-
+  console.log("File MIME Type: ", file.mimetype);
   const allowedTypes = [
     "image/jpeg",
     "image/png",
     "application/pdf",
     "application/zip",
-    "application/x-zip-compressed" // Added additional zip MIME type
+    "application/x-zip-compressed",
   ];
-
   if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true); // Accept the file
+    cb(null, true);
   } else {
     cb(
-      new Error("Invalid file type. Only JPG, PNG, and ZIP files are allowed.")
+      new Error(
+        "Invalid file type. Only JPG, PNG, PDF, and ZIP files are allowed."
+      )
     );
   }
 };
 
-// Apply multer middleware to handle file uploads
-const upload = multer({
+module.exports = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // Max size of 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 });
-
-module.exports = upload; // Export Multer config to be used in routes

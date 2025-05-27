@@ -1,59 +1,49 @@
+// routes/tasks.js
 const express = require("express");
+const router = express.Router();
 const path = require("path");
 const fs = require("fs");
-const Task = require("../models/Task"); // Ensure Task model is correctly imported
-const { authMiddleware } = require("../middleware/auth"); // Middleware for authentication
+const { authMiddleware } = require("../middleware/auth");
+const Task = require("../models/Task");
 
-const router = express.Router();
-
-// File download route for a specific task
-router.get("/:taskId", authMiddleware, async (req, res) => {
-  const { taskId } = req.params; // Extract the taskId from the URL parameter
+// Download file route
+router.get("/download/:taskId", authMiddleware, async (req, res) => {
+  const { taskId } = req.params;
+  const userId = req.user._id || req.user.id; // authMiddleware should set req.user
 
   try {
-    // Find the task by taskId
-    const task = await Task.findById(taskId);
-    if (!task) return res.status(404).json({ message: "Task not found" });
+    // Find task and verify permission
+    const task = await Task.findOne({
+      _id: taskId,
+      $or: [{ createdBy: userId }, { assignedTo: userId }],
+    });
 
-    // Ensure the user is authorized to download the file (only assigned users can download)
-    if (task.assignedTo.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ message: "Unauthorized to download this file" });
+    if (!task || !task.file) {
+      return res.status(404).json({ message: "File not found" });
     }
 
-    // Construct the full file path using the 'file' field from the task (relative to the uploads directory)
-    const filePath = path.join(__dirname, "..", "..", "uploads", task.file);
-    console.log("File Path:", filePath); // Log the file path to ensure it's correct
+    // Construct the file path
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    const filePath = path.join(uploadsDir, task.file);
 
-    const fileName = path.basename(filePath); // Extract the file name from the path
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "File not found on server" });
+    }
 
-    // Check if the file exists on the server
-    fs.access(filePath, fs.constants.F_OK, (err) => {
+    // Use the stored filename (task.file) as the download name
+    const downloadName = task.file;
+
+    return res.download(filePath, downloadName, (err) => {
       if (err) {
-        console.error("File not found at path:", filePath); // Log if the file is not found
-        return res.status(404).json({ message: "File not found" });
-      }
-
-      // Set the Content-Disposition header to indicate it's an attachment
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${fileName}"`
-      );
-
-      // Send the file for download
-      res.download(filePath, fileName, (err) => {
-        if (err) {
-          console.error("Error downloading file:", err);
-          return res.status(500).json({ message: "Error downloading file" });
+        console.error("Error in res.download:", err);
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Error sending file" });
         }
-      });
+      }
     });
   } catch (err) {
-    console.error("Error fetching task:", err);
-    res
-      .status(500)
-      .json({ message: "Error fetching task", error: err.message });
+    console.error("Download error:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 

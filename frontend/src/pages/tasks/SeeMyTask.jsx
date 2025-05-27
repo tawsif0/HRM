@@ -150,53 +150,37 @@ const SeeMyTask = () => {
     }
 
     axios({
-      method: "get",
-      url: `http://localhost:5000/api/tasks/${taskId}`, // Use correct endpoint
+      url: `http://localhost:5000/api/download/${taskId}`,
+      method: "GET",
       responseType: "blob",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
-        // Extract filename from headers with proper encoding
-        const contentDisposition = response.headers["content-disposition"];
+        // Extract filename from headers
+        const disposition = response.headers["content-disposition"];
         let fileName = "download";
-
-        if (contentDisposition) {
-          const fileNameRegex =
-            /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
-          const matches = fileNameRegex.exec(contentDisposition);
-          if (matches && matches[1]) {
-            fileName = decodeURIComponent(matches[1]);
-          }
+        if (disposition) {
+          const match = disposition.match(
+            /filename\*?=(?:UTF-8'')?"?([^;"']+)"?/i
+          );
+          if (match && match[1]) fileName = decodeURIComponent(match[1]);
         }
 
-        // Create proper blob with type from response
-        const blob = new Blob([response.data], {
-          type: response.headers["content-type"],
-        });
-
-        // Create temporary link and simulate click
+        // Create blob and trigger download
+        const blob = new Blob([response.data], { type: response.data.type });
         const link = document.createElement("a");
-        const url = window.URL.createObjectURL(blob);
-
-        link.href = url;
+        link.href = window.URL.createObjectURL(blob);
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
+        link.remove();
 
-        // Cleanup
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(link);
-          toast.success(`${fileName} downloaded successfully`);
-        }, 100);
+        toast.success(`${fileName} downloaded successfully`);
       })
       .catch((error) => {
         console.error("Download error:", error);
-        const errorMessage =
-          error.response?.data?.message || error.message || "Download failed";
-        toast.error(errorMessage);
+        const message = error.response?.data?.message || error.message;
+        toast.error(message);
       });
   };
 
