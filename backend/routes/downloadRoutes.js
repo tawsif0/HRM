@@ -15,7 +15,7 @@ router.get("/download/:taskId", authMiddleware, async (req, res) => {
     // Find task and verify permission
     const task = await Task.findOne({
       _id: taskId,
-      $or: [{ createdBy: userId }, { assignedTo: userId }],
+      $or: [{ createdBy: userId }, { assignedTo: userId }]
     });
 
     if (!task || !task.file) {

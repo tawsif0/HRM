@@ -25,7 +25,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
     if (taskId) {
       const task = await Task.findOne({
         _id: taskId,
-        $or: [{ createdBy: userId }, { assignedTo: userId }],
+        $or: [{ createdBy: userId }, { assignedTo: userId }]
       });
 
       if (!task || !task.file) {
@@ -48,7 +48,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
         if (err && !res.headersSent) {
           res.status(500).json({
             message: "Download failed",
-            error: err.message,
+            error: err.message
           });
         }
       });
@@ -63,7 +63,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Server error",
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -84,7 +84,7 @@ router.post("/", authMiddleware, upload.single("file"), async (req, res) => {
       description,
       createdBy: req.user._id,
       assignedTo,
-      expireDate,
+      expireDate
     });
     await task.save();
 
@@ -207,7 +207,7 @@ router.get("/half-completed/:taskId", authMiddleware, async (req, res) => {
     // If the task is half-completed, send the gitUrl and gitDescription
     return res.status(200).json({
       gitUrl: task.gitUrl,
-      gitDescription: task.gitDescription,
+      gitDescription: task.gitDescription
     });
   } catch (err) {
     console.error(err);
@@ -241,13 +241,13 @@ router.put("/half-complete/:taskId", authMiddleware, async (req, res) => {
     // Respond with the updated task data
     res.status(200).json({
       message: "Task marked as half-complete",
-      task,
+      task
     });
   } catch (err) {
     // Handle any unexpected errors
     res.status(500).json({
       message: "Error marking task as half-complete",
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -284,7 +284,7 @@ router.put("/complete/:taskId", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error completing task",
-      error: err.message,
+      error: err.message
     });
   }
 });

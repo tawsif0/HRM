@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// Attendance.jsx (final dropdown, user calendar, modal, presence count, and holiday management)
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -17,7 +16,7 @@ const getDayNumber = (dayName) =>
     "Wednesday",
     "Thursday",
     "Friday",
-    "Saturday",
+    "Saturday"
   ].indexOf(dayName);
 
 const getLocalDateString = (date) => new Date(date).toLocaleDateString("en-CA");
@@ -36,20 +35,12 @@ const Attendance = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:5000/api/users", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       const filteredUsers = res.data.filter((u) => u.role?.name !== "admin");
       setUsers(filteredUsers);
-
-      const attRes = await axios.get(
-        "http://localhost:5000/api/attendance/all",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setAttendanceCounts(attRes.data);
     } catch (err) {
-      toast.error("Error fetching users or attendance");
+      toast.error("Error fetching users");
     }
   };
 
@@ -61,16 +52,28 @@ const Attendance = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUserAttendance(res.data);
+      calculateAttendanceCount(res.data);
     } catch (err) {
       toast.error("Error loading user attendance history");
     }
+  };
+
+  const calculateAttendanceCount = (attendanceRecords) => {
+    let presentCount = 0;
+    attendanceRecords.forEach((record) => {
+      if (record.status === "Present") presentCount++;
+    });
+    setAttendanceCounts((prev) => ({
+      ...prev,
+      [selectedUserId]: presentCount
+    }));
   };
 
   const fetchHolidays = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:5000/api/holidays", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       setWeekend(res.data.weekend);
       const dates = res.data.holidays.map((d) => new Date(d));
@@ -104,7 +107,7 @@ const Attendance = () => {
                 day
               );
               return localDate.toLocaleDateString("en-CA"); // Format: YYYY-MM-DD
-            }),
+            })
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -118,20 +121,23 @@ const Attendance = () => {
   const calculateWorkingDays = useCallback(() => {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const month = now.getMonth(); // Current month
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Number of days in current month
     const holidayDays = holidayInput
       .split(",")
       .map((d) => parseInt(d.trim()))
       .filter((d) => !isNaN(d));
 
     let count = 0;
+
+    // Loop through all days of the current month
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month, i);
-      const isWeekend = date.getDay() === getDayNumber(weekend);
-      const isHoliday = holidayDays.includes(i);
-      if (!isWeekend && !isHoliday) count++;
+      const isWeekend = date.getDay() === getDayNumber(weekend); // Check if it's a weekend
+      const isHoliday = holidayDays.includes(i); // Check if it's a holiday
+      if (!isWeekend && !isHoliday) count++; // Increment count if it's neither weekend nor holiday
     }
+
     return count;
   }, [weekend, holidayInput]);
 
@@ -176,7 +182,7 @@ const Attendance = () => {
               "Wednesday",
               "Thursday",
               "Friday",
-              "Saturday",
+              "Saturday"
             ].map((day) => (
               <option key={day} value={day}>
                 {day}

@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   isRoleAssigned: { type: Boolean, default: false },
   isTaskCreator: { type: Boolean, default: false }, // Flag for Task Creator privilege
   notifications: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 });
 
 // Password hashing before saving the user

@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
       email,
       phone,
       password,
-      notifications: true,
+      notifications: true
     });
     const userCount = await User.countDocuments();
     if (userCount === 0) {
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "1h"
     });
 
     res.json({
@@ -58,8 +58,8 @@ router.post("/login", async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
-        isAdminPermanent: user.isAdminPermanent,
-      },
+        isAdminPermanent: user.isAdminPermanent
+      }
     });
   } catch (err) {
     res.status(500).json({ message: "Login failed" });
