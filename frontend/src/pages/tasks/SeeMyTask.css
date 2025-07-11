@@ -513,3 +513,138 @@
     font-size: 2rem;
   }
 }
+/* Sexy Badge Styles */
+.badge-container {
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  z-index: 10;
+}
+
+.hot-badge {
+  position: relative;
+  filter: drop-shadow(0 2px 8px rgba(255, 50, 50, 0.6));
+}
+
+.badge-inner {
+  position: relative;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: white;
+  z-index: 2;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-text {
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.badge-sparkle {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  background: white;
+  transform: rotate(45deg);
+  z-index: 1;
+  animation: sparkleFlash 2s infinite;
+}
+
+.badge-sparkle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  transform: rotate(90deg);
+}
+
+.badge-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  animation: pulseGlow 2s infinite;
+  z-index: 1;
+}
+
+/* Badge color variations */
+.badge-danger {
+  background: linear-gradient(135deg, #ff4d4d 0%, #f72585 100%);
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ff9a44 0%, #ff6b6b 100%);
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #4cd964 0%, #5ac8fa 100%);
+}
+
+/* Animations */
+@keyframes sparkleFlash {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.5);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+/* Hover effects */
+.hot-badge:hover .badge-inner {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(247, 37, 133, 0.3);
+}
+
+.hot-badge:hover .badge-sparkle {
+  animation: sparkleFlash 0.5s infinite;
+}
+
+/* Adjust the stellar-header to accommodate the badge */
+.stellar-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.task-title {
+  margin-right: 20px; /* Give space for the badge */
+  flex-grow: 1;
+}

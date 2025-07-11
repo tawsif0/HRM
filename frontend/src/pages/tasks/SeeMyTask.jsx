@@ -11,10 +11,11 @@ import {
   FiXCircle,
   FiSend,
   FiCalendar,
-  FiUser,
+  FiUser
 } from "react-icons/fi";
 import "./SeeMyTask.css";
 import moment from "moment-timezone";
+
 const SeeMyTask = () => {
   const [tasks, setTasks] = useState([]);
   const [currentUserId, setCurrentUserId] = useState("");
@@ -23,7 +24,7 @@ const SeeMyTask = () => {
 
   const [completionDetails, setCompletionDetails] = useState({
     gitUrl: "", // Initialize with an empty string
-    gitDescription: "", // Initialize with an empty string
+    gitDescription: "" // Initialize with an empty string
   });
 
   const [showInputFields, setShowInputFields] = useState(null); // Track if input fields are shown for a specific task
@@ -43,8 +44,8 @@ const SeeMyTask = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+              "Content-Type": "application/json"
+            }
           }
         );
 
@@ -69,8 +70,8 @@ const SeeMyTask = () => {
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json",
-              },
+                "Content-Type": "application/json"
+              }
             }
           );
           setTasks(response.data);
@@ -95,13 +96,13 @@ const SeeMyTask = () => {
         `http://localhost:5000/api/tasks/half-complete/${taskId}`,
         {
           completionLink: gitUrl,
-          completionDescription: gitDescription,
+          completionDescription: gitDescription
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
 
@@ -124,6 +125,7 @@ const SeeMyTask = () => {
       toast.error("Error marking task as half-complete");
     }
   };
+
   const showHalfCompletionInputs = (taskId) => {
     setShowInputFields(taskId); // Show input fields for the clicked task only
     setTaskIdForHalfCompletion(taskId); // Set the task ID for half completion
@@ -134,7 +136,7 @@ const SeeMyTask = () => {
     const { name, value } = e.target;
     setCompletionDetails((prevDetails) => ({
       ...prevDetails,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -142,6 +144,7 @@ const SeeMyTask = () => {
     setShowInputFields(null); // Reset the task inputs state
     setTaskIdForHalfCompletion(null); // Reset the task ID for half completion
   };
+
   const handleDownload = (taskId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -153,7 +156,7 @@ const SeeMyTask = () => {
       url: `http://localhost:5000/api/download/${taskId}`,
       method: "GET",
       responseType: "blob",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {
         // Extract filename from headers
@@ -191,8 +194,8 @@ const SeeMyTask = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         }
       );
       toast.success("Task completed");
@@ -204,7 +207,7 @@ const SeeMyTask = () => {
                 ...task,
                 isCompleted: true,
                 isHalfCompleted: false,
-                completionDate: response.data.completionDate, // update the completion date
+                completionDate: response.data.completionDate // update the completion date
               }
             : task
         )
@@ -214,10 +217,67 @@ const SeeMyTask = () => {
     }
   };
 
+  const calculateRemainingTime = (expireDate) => {
+    const now = moment();
+    const expireMoment = moment(expireDate);
+    const diffInDays = expireMoment.diff(now, "days");
+    const diffInHours = expireMoment.diff(now, "hours");
+    const diffInMinutes = expireMoment.diff(now, "minutes");
+
+    if (diffInDays > 1) return `${diffInDays} days remaining`;
+    if (diffInDays === 1) return "1 day remaining";
+    if (diffInHours > 1) return `${diffInHours} hours remaining`;
+    if (diffInHours === 1) return "1 hour remaining";
+    return `${diffInMinutes} minutes remaining`;
+  };
+
+  const getUrgencyBadge = (expireDate) => {
+    const now = moment();
+    const expireMoment = moment(expireDate);
+    const diffInHours = expireMoment.diff(now, "hours");
+
+    if (diffInHours <= 24) {
+      return (
+        <div className="badge-container">
+          <div className="hot-badge">
+            <div className="badge-inner badge-danger">
+              <span className="badge-text">Urgent</span>
+              <div className="badge-sparkle"></div>
+              <div className="badge-pulse"></div>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (diffInHours <= 72) {
+      return (
+        <div className="badge-container">
+          <div className="hot-badge">
+            <div className="badge-inner badge-warning">
+              <span className="badge-text">Due Soon</span>
+              <div className="badge-sparkle"></div>
+              <div className="badge-pulse"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="badge-container">
+        <div className="hot-badge">
+          <div className="badge-inner badge-success">
+            <span className="badge-text">On Time</span>
+            <div className="badge-sparkle"></div>
+            <div className="badge-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="task-container">
       <div className="glass-header">
-        <h1 className="holographic-title">Task Master</h1>
+        <h1 className="holographic-title">Task Manager</h1>
         <div className="neu-stats">
           <div className="neu-stat-card">
             <FiClock className="stat-icon" />
@@ -265,21 +325,15 @@ const SeeMyTask = () => {
                   >
                     <div className="stellar-header">
                       <h3 className="task-title">{task.name}</h3>
-                      <FiChevronDown
-                        className={`wormhole-icon ${
-                          expandedTask === task._id ? "rotated" : ""
-                        }`}
-                      />
+                      <div className="task-urgency-badge">
+                        {getUrgencyBadge(task.expireDate)}
+                      </div>
                     </div>
+
                     <div className="cosmic-meta">
                       <span className="meta-star">
                         <FiCalendar className="meta-pulsar" />
-                        {new Date(task.expireDate).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {calculateRemainingTime(task.expireDate)}
                       </span>
                       <span className="meta-star">
                         <FiUser className="meta-pulsar" />
@@ -306,7 +360,7 @@ const SeeMyTask = () => {
                               : `${Math.floor(
                                   (new Date(task.expireDate) - new Date()) /
                                     (1000 * 60 * 60 * 24)
-                                )}Days remaining`}
+                                )} Days remaining`}
                           </span>
                         </div>
                       </div>
@@ -440,23 +494,17 @@ const SeeMyTask = () => {
                       <h3 className="task-title">{task.name}</h3>
 
                       {isTaskExpired ? (
-                        // Failed badge for expired tasks
-                        <>
-                          <div className="failed-badge">
-                            <FiXCircle className="badge-core" />
-                            <div className="badge-aurora"></div>
-                            <span>Galactic Overdue</span>
-                          </div>
-                        </>
+                        <div className="failed-badge">
+                          <FiXCircle className="badge-core" />
+                          <div className="badge-aurora"></div>
+                          <span>Galactic Overdue</span>
+                        </div>
                       ) : (
-                        // Victory badge for on-time tasks
-                        <>
-                          <div className="victory-badge">
-                            <FiCheckCircle className="badge-core" />
-                            <div className="badge-aurora"></div>
-                            <span>Perfect Execution</span>
-                          </div>
-                        </>
+                        <div className="victory-badge">
+                          <FiCheckCircle className="badge-core" />
+                          <div className="badge-aurora"></div>
+                          <span>Perfect Execution</span>
+                        </div>
                       )}
                     </div>
                     <div className="cosmic-meta">
@@ -473,7 +521,7 @@ const SeeMyTask = () => {
                             month: "short",
                             day: "numeric",
                             hour: "2-digit",
-                            minute: "2-digit",
+                            minute: "2-digit"
                           })}
                         </span>
                       )}
@@ -488,7 +536,7 @@ const SeeMyTask = () => {
                               month: "short",
                               day: "numeric",
                               hour: "2-digit",
-                              minute: "2-digit",
+                              minute: "2-digit"
                             }
                           )}
                         </span>
